@@ -1,0 +1,1 @@
+Sehr geehrte Kunde, wir öffnen Kasse 3
