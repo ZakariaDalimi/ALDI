@@ -9,6 +9,11 @@ obj/
 *.userosscache
 *.sln.docstates
 
+*.db
+*.db-shm
+*.db-wal
+
+
 # Specific project level compiled asset protection
 ReactwithASP.Server/obj/
 

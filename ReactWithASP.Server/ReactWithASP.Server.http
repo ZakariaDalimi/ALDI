@@ -1,6 +1,8 @@
-@ReactWithASP.Server_HostAddress = http://localhost:5035
-
-GET {{ReactWithASP.Server_HostAddress}}/weatherforecast/
+@rootURL = http://localhost:5035
+GET {{rootURL}}/weatherforecast/
 Accept: application/json
 
 ###
+
+GET {{rootURL}}/api/products
+Accept: application/json
