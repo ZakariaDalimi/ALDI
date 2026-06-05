@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using ReactWithASP.Server.Data;
+using ReactWithASP.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddScoped<CategoryImportService>();
+
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -15,6 +17,17 @@ var conString = builder.Configuration.GetConnectionString("DefaultConnection") ?
     " not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(conString));
+
+
+builder.Services.AddHttpClient("MyExternalApi", client =>
+{
+    client.BaseAddress = new Uri("https://api.parse.bot/scraper/");
+    client.DefaultRequestHeaders.Add("X-Api-Key", "pmx_e1f7b5c621ba17cdd291feecfb899881");
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
+
+
 
 var app = builder.Build();
 
@@ -28,6 +41,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 
 app.UseAuthorization();
 
