@@ -89,6 +89,13 @@
   --spacing-stack-md: 16px;
   --spacing-stack-lg: 32px;
   --spacing-page-desktop:10%;
+  
+}
+
+@media (min-width: 1536px) {
+  :root {
+    --spacing-page-desktop: 20%;
+  }
 }
 
 /* ==========================================
@@ -122,6 +129,12 @@
   font-weight: 600;
   line-height: 28px;
 }
+@utility text-headline-sm {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 28px;
+}
 
 @utility text-body-lg {
   font-family: 'Inter', sans-serif;
@@ -149,4 +162,56 @@
   font-size: 11px;
   font-weight: 500;
   line-height: 14px;
+}
+
+.nav-link {
+
+  @apply relative pb-2 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:bg-secondary after:w-0 after:transition-all after:duration-350;
+  @apply hover:after:w-full;
+}
+
+.nav-active {
+  @apply after:w-full text-white font-bold;
+}
+
+.hero-bg {
+  @apply bg-no-repeat bg-center bg-cover saturate-50 min-h-[70vh]
+}
+
+.btn-primary {
+  @apply bg-primary
+}
+.btn-secondary {
+  @apply bg-secondary-container text-black !opacity-100
+}
+.btn-tertiary {
+  @apply bg-tertiary-container
+}
+
+
+ .swiper-pagination-bullet{
+ background: #ffffff !important;
+  opacity: 0.5;
+  width: 15px !important; /* Default Swiper bullet width */
+  height: 15px !important;
+  
+  /* Use 'transition' shorthand correctly */
+  transition: all 0.5s ease-in-out !important;
+
+  opacity: 1 !important;
+
+
+}
+
+.swiper-pagination-bullet-active {
+
+}
+
+
+ .swiper-pagination-bullet-active {
+  background: #ff8200 !important;
+  opacity: 1;
+  width: 70px !important;
+  border-radius: 10px !important;
+
 }

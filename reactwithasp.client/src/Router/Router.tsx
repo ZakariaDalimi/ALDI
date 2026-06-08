@@ -21,7 +21,7 @@ const Layout = () => {
   return (
     <>
       <Navbar navLinks={navItems} />
-      <main className="px-page-desktop">
+      <main className="">
         <Outlet /> 
       </main>
     </>
