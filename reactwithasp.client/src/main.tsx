@@ -10,9 +10,9 @@ const navItems = [
     { title: "Test", linkTo: "/test" },
   ];
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+ <StrictMode>
 
-    <Router >
+    <Router>
             <Navbar navLinks={navItems} />
 
     </Router>

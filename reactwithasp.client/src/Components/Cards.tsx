@@ -18,7 +18,7 @@ interface CardsProps {
 // 2. Destructure 'slides' from the props object
 const Cards: React.FC<CardsProps> = ({ slides }) => {
   return (
-    <section className="my-margin-desktop px-page-desktop bg-gray-300/50 py-margin-desktop">
+    <section className="my-margin-desktop px-page-desktop bg-surface py-margin-desktop">
       <header className="flex flex-col lg:flex-row lg:items-center justify-between mb-gutter-desktop w-full gap-4">
         <div className="w-full">
           <h1 className="text-headline-lg text-black ">

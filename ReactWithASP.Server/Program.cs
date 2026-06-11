@@ -4,6 +4,17 @@ using ReactWithASP.Server.Data;
 using ReactWithASP.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+// 1. DEFINE THE POLICY
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins("https://localhost:50277") // Your frontend URL
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
 
 builder.Services.AddScoped<CategoryImportService>();
 
@@ -42,6 +53,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors("AllowFrontend");
 
 app.UseAuthorization();
 

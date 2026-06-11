@@ -1,11 +1,20 @@
 import React from "react";
 import Logo from "./Logo";
 import { Link, NavLink } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { categoriesQuery } from "../api/categoriesQuery";
+
 interface Props {
   navLinks: [{ title: string; linkTo: string }];
 }
 const Navbar: React.FC<Props> = ({ navLinks }) => {
 
+    const {data:categories, isLoading } = useQuery(categoriesQuery);
+  const preview = categories?.slice(0,4) || [];
+
+    console.log('====================================');
+    console.log(preview);
+    console.log('====================================');
   return (
     <header className="py-stack-sm bg-tertiary-container px-page-desktop flex gap-gutter-desktop items-center">
       <Link to="/">

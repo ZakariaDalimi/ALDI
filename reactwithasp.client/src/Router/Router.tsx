@@ -4,7 +4,9 @@ import Categories from "./Pages/Categories";
 import Sales from "./Pages/Sales";
 import NotFound from "./Pages/NotFound";
 import Navbar from "../Components/Navbar";
-
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import SingleCategoryPage from "./Pages/SingleCategoryPage";
+export const queryClient = new QueryClient();
 const navItems = [
   { title: "Categories", linkTo: "/categories" },
   { title: "Sales", linkTo: "/sales" }, // Assuming this routes somewhere or to Root
@@ -19,12 +21,12 @@ const navItems = [
 
 const Layout = () => {
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <Navbar navLinks={navItems} />
       <main className="">
         <Outlet /> 
       </main>
-    </>
+    </QueryClientProvider>
   );
 };
 
@@ -42,7 +44,16 @@ const router = createBrowserRouter([
       },
       {
         path: "categories",
-        Component: Categories,
+        children:[
+          {
+            Component: Categories,
+            index:true,
+          },
+          {
+            path:":categoryName",
+            Component:SingleCategoryPage,
+          }
+        ]
       },
       {
         path: "sales",
