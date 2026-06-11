@@ -11,11 +11,14 @@ using ReactWithASP.Server.Services;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CategoryController(ApplicationDbContext context, CategoryImportService categoryImportService) : ControllerBase
+public class CategoryController(ApplicationDbContext context, CategoryImportService categoryImportService, IConfiguration configuration) : ControllerBase
 {
     private readonly ApplicationDbContext _context = context;
-
     private readonly CategoryImportService _categoryImportService = categoryImportService;
+
+        private readonly IConfiguration _configuration = configuration;
+
+
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Category>>> GetAll()
@@ -30,9 +33,9 @@ public class CategoryController(ApplicationDbContext context, CategoryImportServ
     {
         using var client = new HttpClient();
 
-        var request = new HttpRequestMessage(HttpMethod.Get, "https://api.parse.bot/scraper/3e8a2517-2748-4ad2-809c-d99f0bc32914/get_product_categories");
+        var request = new HttpRequestMessage(HttpMethod.Get, _configuration["ApiSettings:BaseUrl"] + "get_product_categories");
 
-        request.Headers.Add("X-API-Key", "pmx_e1f7b5c621ba17cdd291feecfb899881");
+        request.Headers.Add("X-API-Key", _configuration["ApiSettings:ApiKey"]);
         request.Headers.Add("Accept", "application/json");
 
         try

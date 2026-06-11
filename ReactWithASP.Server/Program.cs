@@ -1,10 +1,17 @@
 using Microsoft.EntityFrameworkCore;
+using ReactwithASP.Server.Services;
 using ReactWithASP.Server.Data;
 using ReactWithASP.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<CategoryImportService>();
+
+builder.Services.AddScoped<ProductImportService>();
+
+builder.Services.AddScoped<OffersImportService>();
+
+
 
 
 builder.Services.AddControllers();
@@ -18,13 +25,6 @@ var conString = builder.Configuration.GetConnectionString("DefaultConnection") ?
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(conString));
 
-
-builder.Services.AddHttpClient("MyExternalApi", client =>
-{
-    client.BaseAddress = new Uri("https://api.parse.bot/scraper/");
-    client.DefaultRequestHeaders.Add("X-Api-Key", "pmx_e1f7b5c621ba17cdd291feecfb899881");
-    client.DefaultRequestHeaders.Add("Accept", "application/json");
-});
 
 
 
