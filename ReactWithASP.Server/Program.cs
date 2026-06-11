@@ -9,6 +9,9 @@ builder.Services.AddScoped<CategoryImportService>();
 
 builder.Services.AddScoped<ProductImportService>();
 
+builder.Services.AddScoped<OffersImportService>();
+
+
 
 
 builder.Services.AddControllers();
