@@ -215,3 +215,47 @@
   border-radius: 10px !important;
 
 }
+
+.card {
+  position: relative; /* Ensures absolute positioning works correctly if needed */
+  cursor: pointer;
+  overflow: hidden;   /* Keeps moving elements contained */
+}
+
+/* 1. The Container / Background */
+.card-content {
+  position: absolute;
+  bottom: -3%;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  
+  transition: opacity 0.3s ease, bottom 0.3s ease;
+}
+
+
+.card-content h3,
+.card-content p {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition-delay: 0.15s; 
+}
+
+
+.card:hover .card-content {
+  opacity: 1;
+  bottom: 0%;
+}
+
+
+.card:hover .card-content h3,
+.card:hover .card-content p {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.card:not(:hover) .card-content h3,
+.card:not(:hover) .card-content p {
+  transition-delay: 0s;
+}
