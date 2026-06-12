@@ -31,14 +31,16 @@ public class OffersImportService(ApplicationDbContext context)
             var brand =  item?["brand"]?.ToString() ?? string.Empty;
             var imageUrl = item?["image_url"]?.ToString() ?? string.Empty;
             var salesUnit = item?["sales_unit"]?.ToString() ?? string.Empty;
-            decimal? originalPrice = item?["original_price"]?.GetValue<decimal>();
+            decimal? price = item?["price"]?.GetValue<decimal>();
 
+        
 
-        if (string.IsNullOrEmpty(name) || 
+            if (string.IsNullOrEmpty(name) || 
                 string.IsNullOrEmpty(brand) || 
-                string.IsNullOrEmpty(imageUrl) || 
-                originalPrice == null || 
-                originalPrice <= 0m) 
+                string.IsNullOrEmpty(imageUrl) ||
+                price == null ||
+                price <= 0m)
+                
             {
                 continue;
             }
@@ -52,7 +54,7 @@ public class OffersImportService(ApplicationDbContext context)
                 SalesUnit = salesUnit,
                 ImageUrl = imageUrl,
                 // discount
-                OriginalPrice = originalPrice.Value,
+                OriginalPrice = item?["original_price"]?.GetValue<decimal>() ?? 0m,
                 OfferCategory = item?["offer_category"]?.ToString() ?? string.Empty,
                 OfferSectionTitle = item?["offer_section_title"]?.ToString() ?? string.Empty,
                 ValidityStart = (DateTime?) item?["validity_start"],
