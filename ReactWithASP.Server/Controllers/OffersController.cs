@@ -33,7 +33,7 @@ public class OffersController(ApplicationDbContext context, OffersImportService 
 
    
     [HttpGet("import")]
-    public async Task<IActionResult> ImportProducts()
+    public async Task<IActionResult> ImportOffers()
     {
         using var client = new HttpClient();
         var apiKey = _configuration["ApiSettings:ApiKey"];
