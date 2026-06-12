@@ -2,6 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using ReactwithASP.Server.Services;
 using ReactWithASP.Server.Data;
 using ReactWithASP.Server.Services;
+using System.Security.Claims;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 // 1. DEFINE THE POLICY
@@ -15,6 +18,10 @@ builder.Services.AddCors(options =>
                   .AllowAnyMethod();
         });
 });
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 
 builder.Services.AddScoped<CategoryImportService>();
 
@@ -49,6 +56,9 @@ app.MapStaticAssets();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
+
 }
 
 app.UseHttpsRedirection();

@@ -10,9 +10,9 @@ using System.Text.Json.Nodes;
 using ReactwithASP.Server.Services;
 using ReactWithASP.Server.Services;
 
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 [ApiController]
-public class ProductsController(ApplicationDbContext context, ProductImportService productImportService, IConfiguration configuration) : ControllerBase
+public class ProductController(ApplicationDbContext context, ProductImportService productImportService, IConfiguration configuration) : ControllerBase
 {
     private readonly ApplicationDbContext _context = context;
 
@@ -24,9 +24,10 @@ public class ProductsController(ApplicationDbContext context, ProductImportServi
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Product>>> GetAll()
     {
-        var data = await _context.Products.ToListAsync();
+        var data = await _context.Products
+            .Where(p => p.IsDiscount == false)
+            .ToListAsync();
         return Ok(data);
     }
-
 
 }

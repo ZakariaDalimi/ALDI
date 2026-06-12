@@ -24,7 +24,6 @@ public class CategoryImportService(ApplicationDbContext context)
         foreach (var item in categoriesArray)
             {
             string categoryName = item?["name"]?.ToString() ?? string.Empty;
-            int productCount = item?["count"]?.GetValue<int>() ?? 0;
 
             if (string.IsNullOrEmpty(categoryName)) continue;
 
@@ -34,7 +33,6 @@ public class CategoryImportService(ApplicationDbContext context)
             var newCategory = new Category
             {
                 Name = categoryName,
-                Count = productCount,
                 Products = []
             };
 

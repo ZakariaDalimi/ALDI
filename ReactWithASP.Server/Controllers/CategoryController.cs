@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using ReactwithASP.Server.Models;
 using System.Text.Json.Nodes;
 using ReactWithASP.Server.Services;
+using SQLitePCL;
 
 [Route("api/v1/[controller]")]
 [ApiController]
