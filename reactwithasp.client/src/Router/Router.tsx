@@ -4,8 +4,9 @@ import Categories from "./Pages/Categories";
 import Sales from "./Pages/Sales";
 import NotFound from "./Pages/NotFound";
 import Navbar from "../Components/Navbar";
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import SingleCategoryPage from "./Pages/SingleCategoryPage";
+import { categoriesQuery } from "../api/categoriesQuery";
 export const queryClient = new QueryClient();
 const navItems = [
   { title: "Categories", linkTo: "/categories" },
@@ -13,18 +14,12 @@ const navItems = [
   { title: "Test", linkTo: "/test" },
 ];
 
-
-
-
-
-
-
 const Layout = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <Navbar navLinks={navItems} />
       <main className="">
-        <Outlet /> 
+        <Outlet />
       </main>
     </QueryClientProvider>
   );
@@ -44,16 +39,20 @@ const router = createBrowserRouter([
       },
       {
         path: "categories",
-        children:[
+        children: [
           {
             Component: Categories,
-            index:true,
+            index: true,
+            loader: async () => {
+              await queryClient.ensureQueryData(categoriesQuery);
+              return null; 
+            },
           },
           {
-            path:":categoryName",
-            Component:SingleCategoryPage,
-          }
-        ]
+            path: ":categoryName",
+            Component: SingleCategoryPage,
+          },
+        ],
       },
       {
         path: "sales",
