@@ -12,7 +12,7 @@ using ReactWithASP.Server.Services;
 
 [Route("api/v1/[controller]")]
 [ApiController]
-public class OffersController(ApplicationDbContext context, OffersImportService offersImportService, IConfiguration configuration) : ControllerBase
+public class OfferController(ApplicationDbContext context, OffersImportService offersImportService, IConfiguration configuration) : ControllerBase
 {
     private readonly ApplicationDbContext _context = context;
 
