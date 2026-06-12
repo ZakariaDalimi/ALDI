@@ -9,14 +9,13 @@ using ReactwithASP.Server.Models;
 using System.Text.Json.Nodes;
 using ReactWithASP.Server.Services;
 
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 [ApiController]
 public class CategoryController(ApplicationDbContext context, CategoryImportService categoryImportService, IConfiguration configuration) : ControllerBase
 {
     private readonly ApplicationDbContext _context = context;
     private readonly CategoryImportService _categoryImportService = categoryImportService;
-
-        private readonly IConfiguration _configuration = configuration;
+    private readonly IConfiguration _configuration = configuration;
 
 
 
@@ -34,9 +33,7 @@ public class CategoryController(ApplicationDbContext context, CategoryImportServ
         using var client = new HttpClient();
 
         var request = new HttpRequestMessage(HttpMethod.Get, _configuration["ApiSettings:BaseUrl"] + "get_product_categories");
-
         request.Headers.Add("X-API-Key", _configuration["ApiSettings:ApiKey"]);
-        request.Headers.Add("Accept", "application/json");
 
         try
         {
@@ -52,7 +49,6 @@ public class CategoryController(ApplicationDbContext context, CategoryImportServ
                 
             
             var categoriesArray = jsonDoc?["data"]?["categories"]?.AsArray();
-
             if (categoriesArray == null)
             {
                 return BadRequest("API response structure was invalid or empty.");
@@ -60,8 +56,16 @@ public class CategoryController(ApplicationDbContext context, CategoryImportServ
 
             try
             {
-                await _categoryImportService.ImportCategory(categoriesArray);
-                return Ok("Data successfully imported to database.");
+                bool isImported = await _categoryImportService.ImportCategory(categoriesArray);
+
+                if (isImported)
+                {
+                    return Ok("Data successfully imported to database.");
+                }
+                else
+                {
+                    return Ok("Import skipped. The categories Array is empty or the categories are already saved in the database.");
+                }
             }
             catch (Exception ex)
             {

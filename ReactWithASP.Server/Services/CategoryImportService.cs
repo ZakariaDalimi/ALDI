@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using Microsoft.EntityFrameworkCore;
 using ReactwithASP.Server.Models;
 using ReactWithASP.Server.Data;
 
@@ -16,6 +17,8 @@ public class CategoryImportService(ApplicationDbContext context)
 
         if (categoriesArray == null || categoriesArray.Count == 0) return false;
         
+        if (await _context.Products.AnyAsync()) return false;
+
 
         int savedCount = 0;
         foreach (var item in categoriesArray)
