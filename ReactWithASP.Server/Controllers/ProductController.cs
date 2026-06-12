@@ -30,14 +30,4 @@ public class ProductController(ApplicationDbContext context, ProductImportServic
         return Ok(data);
     }
 
-
-
-    [HttpGet("import")]
-    public async Task<ActionResult> ImportProducts()
-    {
-        
-        return Ok("wiw");
-    }
-
-
 }
