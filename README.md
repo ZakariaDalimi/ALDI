@@ -1,4 +1,3 @@
-Sehr geehrte Kunden, wir öffnen Kasse 3
 
 Requirement 
 .net v10
