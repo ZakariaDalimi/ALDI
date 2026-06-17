@@ -12,22 +12,31 @@ using ReactWithASP.Server.Services;
 
 [Route("api/v1/[controller]")]
 [ApiController]
-public class ProductController(ApplicationDbContext context, ProductImportService productImportService, IConfiguration configuration) : ControllerBase
+public class ProductController(ApplicationDbContext context, ProductService productService, IConfiguration configuration) : ControllerBase
 {
     private readonly ApplicationDbContext _context = context;
 
     private readonly IConfiguration _configuration = configuration;
 
-    private readonly ProductImportService _productImportService = productImportService;
+    private readonly ProductService _productService = productService;
 
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Product>>> GetAll()
+    public async Task<IEnumerable<Product>> GetAll()
     {
-        var data = await _context.Products
-            .Where(p => p.IsDiscount == false)
-            .ToListAsync();
-        return Ok(data);
+        return await _context.Products
+                            .Where(p => p.IsDiscount == false)
+                            .ToListAsync();
+    }
+
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Product?>> GetProductDetails(int id)
+    {
+        var product = await _productService.GetProductById(id);
+        if(product == null) return NotFound("Product not Found!");
+        return Ok(product);
+        
     }
 
 }

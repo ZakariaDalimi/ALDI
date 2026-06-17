@@ -14,7 +14,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<CategoryImportService>();
 
-builder.Services.AddScoped<ProductImportService>();
+builder.Services.AddScoped<ProductService>();
 
 builder.Services.AddScoped<OffersImportService>();
 
