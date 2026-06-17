@@ -7,7 +7,7 @@ const Categories = () => {
   console.log(categories);
   
   return (
-    <section className="px-page-desktop py-gutter-desktop " >Categories</section>
+    <section className="px-page-desktop py-gutter-desktop" >Categories</section>
   )
 }
 
