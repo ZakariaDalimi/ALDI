@@ -12,10 +12,10 @@ using SQLitePCL;
 
 [Route("api/v1/[controller]")]
 [ApiController]
-public class CategoryController(ApplicationDbContext context, CategoryImportService categoryImportService, IConfiguration configuration) : ControllerBase
+public class CategoryController(ApplicationDbContext context, CategoryService categoryImportService, IConfiguration configuration) : ControllerBase
 {
     private readonly ApplicationDbContext _context = context;
-    private readonly CategoryImportService _categoryImportService = categoryImportService;
+    private readonly CategoryService _categoryImportService = categoryImportService;
     private readonly IConfiguration _configuration = configuration;
 
 

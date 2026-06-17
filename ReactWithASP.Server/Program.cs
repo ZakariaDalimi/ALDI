@@ -23,7 +23,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
-builder.Services.AddScoped<CategoryImportService>();
+builder.Services.AddScoped<CategoryService>();
 
 builder.Services.AddScoped<ProductService>();
 

@@ -43,7 +43,7 @@ public class OfferController(ApplicationDbContext context, OffersImportService o
         try
         {
             // discount for this week
-            var request1 = new HttpRequestMessage(HttpMethod.Get, baseUrl + "get_current_offers");
+            var request1 = new HttpRequestMessage(HttpMethod.Get, $"{baseUrl}get_current_offers");
             request1.Headers.Add("X-API-Key", apiKey);
 
             var response1 = await client.SendAsync(request1);

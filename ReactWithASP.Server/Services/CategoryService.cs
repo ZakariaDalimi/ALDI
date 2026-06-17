@@ -7,10 +7,33 @@ namespace ReactWithASP.Server.Services;
 
 
 
-public class CategoryImportService(ApplicationDbContext context)
+public class CategoryService(ApplicationDbContext context)
 {
     private readonly ApplicationDbContext _context = context;
     
+
+    public async Task<dynamic> GetCategories()
+    {
+
+        return await _context.Categories
+            .Select(c => new
+            {
+                Id = c.CategoryId,
+                Name = c.Name
+            }).ToListAsync();
+    }
+
+
+    public async Task<int?> GetCategoryIdByName( string categoryName)
+    {
+        return await _context.Categories
+            .Where(c=> c.Name == categoryName)
+            .Select(c => c.CategoryId)
+            .FirstOrDefaultAsync();
+    }
+
+
+
 
     public async Task<bool> ImportCategory(JsonArray categoriesArray)
     {
