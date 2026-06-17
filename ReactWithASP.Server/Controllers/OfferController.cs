@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Text.Json.Nodes;
-using ReactwithASP.Server.Services;
 using ReactWithASP.Server.Services;
 
 [Route("api/v1/[controller]")]
@@ -27,6 +26,8 @@ public class OfferController(ApplicationDbContext context, OffersImportService o
         var data = await _context.Products
             .Where(p => p.IsDiscount == true)
             .ToListAsync();
+        if (data == null) return NotFound();
+    
         return Ok(data);
     }
 

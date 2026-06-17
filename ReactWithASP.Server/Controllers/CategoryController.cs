@@ -24,6 +24,7 @@ public class CategoryController(ApplicationDbContext context, CategoryImportServ
     public async Task<ActionResult<IEnumerable<Category>>> GetAll()
     {
         var data = await _context.Categories.ToListAsync();
+        if (data == null) return NotFound();
         return Ok(data);
     }
 
