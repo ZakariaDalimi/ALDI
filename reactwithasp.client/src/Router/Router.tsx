@@ -1,12 +1,14 @@
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router";
 import Root from "./Pages/Root";
 import Categories from "./Pages/Categories";
-import Sales from "./Pages/Sales";
 import NotFound from "./Pages/NotFound";
 import Navbar from "../Components/Navbar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import SingleCategoryPage from "./Pages/SingleCategoryPage";
 import { categoriesQuery } from "../api/categoriesQuery";
+import Offers from "./Pages/Offers";
+import ProductDetails from "./Pages/ProductDetails";
+import { productsQuery } from "../api/discountedProducts";
 export const queryClient = new QueryClient();
 const navItems = [
   { title: "Categories", linkTo: "/categories" },
@@ -55,9 +57,23 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "sales",
-        Component: Sales,
+        path: "offers",
+        children: [
+          {
+            Component: Offers,
+            index: true,
+            loader: async () => {
+              await queryClient.ensureQueryData(productsQuery);
+              return null; 
+            },
+          },
+          {
+            path: ":id",
+            Component: ProductDetails,
+          },
+        ],
       },
+   
       {
         path: "*", // Catch-all route for any undefined URLs
         Component: NotFound,

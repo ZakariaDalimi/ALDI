@@ -12,10 +12,12 @@ export interface Product {
   offerSectionTitle:string;
   validityStart:string;
   validityEnd:string;
+  brand?:string;
+  OfferSectionTitle?:string;
 }
 
 export const fetchProducts = async (): Promise<Product[]> => {
- const response = await fetch('http://localhost:5035/api/products');
+ const response = await fetch('http://localhost:5035/api/v1/offer');
  if (!response.ok) {
     throw new Error(`Failed to fetch categories:${response.statusText}`)
  }
