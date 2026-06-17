@@ -7,7 +7,7 @@ export interface Category {
 }
 
 export const fetchCategories = async (): Promise<Category[]> => {
- const response = await fetch('http://localhost:5035/api/category');
+ const response = await fetch('http://localhost:5035/api/v1/Category');
  if (!response.ok) {
     throw new Error(`Failed to fetch categories:${response.statusText}`)
  }

@@ -27,8 +27,6 @@ const Cards: React.FC<CardsProps> = ({ slides }) => {
   }
 
   const randomProducts = shuffled.slice(0, 20);
-  console.log(randomProducts);
-
   return (
     <section className="my-margin-desktop px-page-desktop bg-surface py-margin-desktop">
       <header className="flex flex-col lg:flex-row lg:items-center justify-between mb-gutter-desktop w-full gap-4">
@@ -135,9 +133,9 @@ const Cards: React.FC<CardsProps> = ({ slides }) => {
       <div className="my-4 grid place-items-center">
         <Link
           className="relative p-2 bg-primary-container text-white after:absolute after:bottom-0 after:left-0 after:h-1 after:w-0 after:bg-secondary-container after:transition-all after:duration-300 hover:after:w-full"
-          to="/products"
+          to="/offers"
         >
-          See More Products
+          See more 
         </Link>
       </div>
     </section>
