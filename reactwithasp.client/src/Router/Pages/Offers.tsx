@@ -40,7 +40,7 @@ const Offers = () => {
               price,
             } = product;
             const offerPercentage =
-              price && `${price && Math.round(((originalPrice - price) * 100) / originalPrice)}%`;
+              originalPrice && `${price && Math.round(((originalPrice - price) * 100) / originalPrice)}%`;
             return (
               <div
                 className="flex flex-col shadow-sm shadow-gray-200"
@@ -57,17 +57,22 @@ const Offers = () => {
                   </h4>
                   <p className="text-black/60 font-bold">{offerSectionTitle}</p>
                   <p className="text-sm">({salesUnit})</p>
+                  {originalPrice > 0 && 
+                  
                   <div className="text-sm w-fit rounded-lg p-1 bg-surface-tint text-white">
                    Spare {offerPercentage}
                   </div>
+                  }
+                  
                   <div className="w-full flex flex-wrap items-center">
                     <h4 className=" font-bold text-lg text-on-primary-fixed-variant">
                       {price ? (
                         <>
                           {" "}
-                          <span className="text-red-600">{price}€</span>{" "}
+                          <span className={`text-2xl ${originalPrice ? "text-red-600" :"text-on-primary-fixed-variant"}`}>{price}€</span>{" "}
+                          
                           <span className="text-sm line-through">
-                            {originalPrice}€
+                            {originalPrice > 0 && `${originalPrice}€`}
                           </span>
                         </>
                       ) : (
