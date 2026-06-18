@@ -10,11 +10,6 @@ interface Props {
 const Navbar: React.FC<Props> = ({ navLinks }) => {
 
     const {data:categories, isLoading } = useQuery(categoriesQuery);
-  const preview = categories?.slice(0,4) || [];
-
-    console.log('====================================');
-    console.log(preview);
-    console.log('====================================');
   return (
     <header className="py-stack-sm bg-tertiary-container px-page-desktop flex gap-gutter-desktop items-center">
       <Link to="/">

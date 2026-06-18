@@ -1,4 +1,6 @@
 import "./System.css"
+import "./Shadcn.css"
+
 import Navbar from "./Components/Navbar";
 
 function App() {

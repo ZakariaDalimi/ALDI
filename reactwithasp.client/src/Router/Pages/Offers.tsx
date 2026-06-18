@@ -1,6 +1,8 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { productsQuery } from "../../api/discountedProducts";
+import { Link } from "react-router-dom";
+import { getSalePercentage } from "../../helpers/getSalePercentage";
 
 const Offers = () => {
   const { data: offers, isLoading, isError, error } = useQuery(productsQuery);
@@ -26,6 +28,10 @@ const Offers = () => {
         </h1>
       </header>
 
+      <button className="cursor-pointer hover:shadow-md shadow-gray-400 duration-200 text-white p-4 my-12 rounded-xl bg-primary">
+          Sortieren & Filtern
+      </button>
+
       {offers && offers.length > 0 && (
         <div className="grid  grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 py-3 gap-y-12 gap-x-6">
           {offers.map((product) => {
@@ -40,9 +46,9 @@ const Offers = () => {
               price,
             } = product;
             const offerPercentage =
-              originalPrice && `${price && Math.round(((originalPrice - price) * 100) / originalPrice)}%`;
+            getSalePercentage(price,originalPrice);
             return (
-              <div
+              <Link to={`${productId}`}
                 className="flex flex-col shadow-sm shadow-gray-200"
                 key={productId}
               >
@@ -81,7 +87,7 @@ const Offers = () => {
                     </h4>
                   </div>
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>

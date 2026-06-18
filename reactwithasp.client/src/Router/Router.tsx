@@ -11,8 +11,8 @@ import ProductDetails from "./Pages/ProductDetails";
 import { productsQuery } from "../api/discountedProducts";
 export const queryClient = new QueryClient();
 const navItems = [
+  { title: "Wochenangebote", linkTo: "/offers" }, // Assuming this routes somewhere or to Root
   { title: "Categories", linkTo: "/categories" },
-  { title: "Sales", linkTo: "/sales" }, // Assuming this routes somewhere or to Root
   { title: "Test", linkTo: "/test" },
 ];
 
@@ -68,7 +68,7 @@ const router = createBrowserRouter([
             },
           },
           {
-            path: ":id",
+            path: "/offers/:id",
             Component: ProductDetails,
           },
         ],

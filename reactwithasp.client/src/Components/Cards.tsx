@@ -93,12 +93,16 @@ const Cards: React.FC<CardsProps> = ({ slides }) => {
           className="w-full !py-4 px-8"
         >
           {randomProducts.map((slide, i) => {
+
+            
             return (
+         
               <SwiperSlide
-                key={i}
+                key={slide?.productId | i}
       
                 className="relative !h-auto flex flex-col bg-white pt-4 px-2 shadow-md shadow-gray-400 after:absolute after:bottom-0 after:left-0 after:h-[3px] after:w-0 after:bg-secondary-container after:transition-all after:duration-300 hover:after:w-full"
               >
+                <Link to={`/offers/${slide?.productId}`} className="flex flex-col h-full w-full">
                 <img
                   src={slide?.imageUrl}
                   alt=""
@@ -125,7 +129,10 @@ const Cards: React.FC<CardsProps> = ({ slides }) => {
                     </div>
                   </div>
                 </div>
+                </Link>
               </SwiperSlide>
+              
+
             );
           })}
         </Swiper>
