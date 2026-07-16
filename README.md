@@ -1,15 +1,40 @@
+# Project Requirements & Setup
 
-Requirement 
-.net v10
+## Requirements
 
-Client
-cd recatwithasp.client 
-2- npm i
+* **.NET 10 SDK**
+* **Node.js** and **npm**
 
+## Client Setup
 
-Server
-cd reactwithasp.server 
+Navigate to the client project:
 
-1- dotnet build 
+```bash
+cd reactwithasp.client
+```
 
-2- dotnet ef database update
+Install the required npm packages:
+
+```bash
+npm install
+```
+
+## Server Setup
+
+Navigate to the server project:
+
+```bash
+cd reactwithasp.server
+```
+
+Build the project:
+
+```bash
+dotnet build
+```
+
+Apply the Entity Framework Core migrations and update the database:
+
+```bash
+dotnet ef database update
+```
