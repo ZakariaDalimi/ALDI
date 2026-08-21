@@ -10,7 +10,7 @@
 Navigate to the client project:
 
 ```bash
-cd reactwithasp.client
+cd Client
 ```
 
 Install the required npm packages:
@@ -24,7 +24,7 @@ npm install
 Navigate to the server project:
 
 ```bash
-cd reactwithasp.server
+cd Server
 ```
 
 Build the project:

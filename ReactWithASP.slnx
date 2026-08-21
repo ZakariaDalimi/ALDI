@@ -1,7 +1,0 @@
-<Solution>
-  <Project Path="reactwithasp.client/reactwithasp.client.esproj">
-    <Build />
-    <Deploy />
-  </Project>
-  <Project Path="ReactWithASP.Server/ReactWithASP.Server.csproj" />
-</Solution>

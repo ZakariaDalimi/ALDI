@@ -15,7 +15,7 @@ obj/
 
 
 # Specific project level compiled asset protection
-ReactwithASP.Server/obj/
+Server/obj/
 
 # Secrets and local environment configurations
 appsettings.Development.json
@@ -25,20 +25,20 @@ usersecrets.json
 # 2. React Frontend (Vite + Node)
 # ==========================================
 # Dependencies and Build Outputs
-reactwithasp.client/node_modules/
-reactwithasp.client/dist/
-reactwithasp.client/dist-ssr/
-reactwithasp.client/*.local
-reactwithasp.client/obj/
+Client/node_modules/
+Client/dist/
+Client/dist-ssr/
+Client/*.local
+Client/obj/
 
 # Frontend Logs
-reactwithasp.client/logs/
-reactwithasp.client/*.log
-reactwithasp.client/npm-debug.log*
-reactwithasp.client/yarn-debug.log*
-reactwithasp.client/yarn-error.log*
-reactwithasp.client/pnpm-debug.log*
-reactwithasp.client/lerna-debug.log*
+Client/logs/
+Client/*.log
+Client/npm-debug.log*
+Client/yarn-debug.log*
+Client/yarn-error.log*
+Client/pnpm-debug.log*
+Client/lerna-debug.log*
 
 # ==========================================
 # 3. Editors, IDEs, and System Files
