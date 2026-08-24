@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Server.Services;
 using Server.Data;
-using Server.Services;
 using System.Security.Claims;
 
 
@@ -26,7 +25,9 @@ builder.Services.AddScoped<CategoryService>();
 
 builder.Services.AddScoped<ProductService>();
 
-builder.Services.AddScoped<OffersImportService>();
+builder.Services.AddScoped<FilterService>();
+
+builder.Services.AddScoped<OffersService>();
 
 
 

@@ -8,7 +8,7 @@ namespace Server.Services;
 
 
 
-public class OffersImportService(ApplicationDbContext context)
+public class OffersService(ApplicationDbContext context)
 {
     private readonly ApplicationDbContext _context = context;
     

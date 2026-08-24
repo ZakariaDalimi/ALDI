@@ -11,20 +11,20 @@ using Server.Services;
 
 [Route("api/v1/[controller]")]
 [ApiController]
-public class ProductController(ApplicationDbContext context, ProductService productService, IConfiguration configuration, CategoryService categoryService) : ControllerBase
+public class ProductController(ApplicationDbContext context, ProductService productService, IConfiguration configuration, CategoryService categoryService, FilterService filterService) : ControllerBase
 {
     private readonly ApplicationDbContext _context = context;
     private readonly IConfiguration _configuration = configuration;
     private readonly ProductService _productService = productService;
     private readonly CategoryService _categoryService = categoryService;
+    private readonly FilterService _filterService = filterService;
 
 
     [HttpGet]
-    public async Task<IEnumerable<Product>> GetAll()
+    public async Task<ActionResult<IEnumerable<Product>>> GetAll([FromQuery] string? sortBy, [FromQuery] string? brand, [FromQuery] DateTime? date)
     {
-        return await _context.Products
-                            .Where(p => p.IsDiscount == false)
-                            .ToListAsync();
+        var products = await _productService.GetProducts(sortBy, brand, date);
+        return Ok(products ?? Enumerable.Empty<Product>());
     }
 
 
@@ -35,6 +35,20 @@ public class ProductController(ApplicationDbContext context, ProductService prod
         if(product == null) return NotFound("Product not Found!");
         return Ok(product);
     }
+
+
+    [HttpGet("find/{name}")]
+    public async Task<ActionResult<IEnumerable<Product>>> FindProducts(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return BadRequest("Product name is Empty");
+
+        var products = await _filterService.SearchProducts(name.Trim());
+
+        if (products == null) return Ok(Enumerable.Empty<Product>());
+        return Ok(products);
+    }
+
+
 
 
     [HttpGet("import")]
@@ -57,6 +71,11 @@ public class ProductController(ApplicationDbContext context, ProductService prod
         using var client = new HttpClient();
         var apiKey = _configuration["ApiSettings:ApiKey"];
         var baseUrl = _configuration["ApiSettings:BaseUrl"];
+
+        if (string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(baseUrl))
+        {
+            return StatusCode(500, "API configuration is missing.");
+        }
 
 
         await _context.Database.ExecuteSqlRawAsync("DELETE FROM CategoryProduct;");

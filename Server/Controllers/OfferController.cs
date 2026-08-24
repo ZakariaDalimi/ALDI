@@ -11,13 +11,13 @@ using Server.Services;
 
 [Route("api/v1/[controller]")]
 [ApiController]
-public class OfferController(ApplicationDbContext context, OffersImportService offersImportService, IConfiguration configuration) : ControllerBase
+public class OfferController(ApplicationDbContext context, OffersService offersImportService, IConfiguration configuration) : ControllerBase
 {
     private readonly ApplicationDbContext _context = context;
 
     private readonly IConfiguration _configuration = configuration;
 
-    private readonly OffersImportService _offersImportService = offersImportService;
+    private readonly OffersService _offersImportService = offersImportService;
 
 
     [HttpGet]

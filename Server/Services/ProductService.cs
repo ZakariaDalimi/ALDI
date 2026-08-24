@@ -1,11 +1,6 @@
 using System.Text.Json.Nodes;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Data;
-using Server.Models;
-using Server.Services;
-using System.Text.Json;
 using Server.Models;
 namespace Server.Services;
 
@@ -19,6 +14,45 @@ public class ProductService(ApplicationDbContext context, CategoryService catego
 
 
 
+    public async Task<dynamic> GetProducts(string? sortBy, string? brand, DateTime? validOnDate = null)
+        {
+            IQueryable<Product> query = _context.Products.Where(p => p.IsDiscount == false);
+
+            if (validOnDate.HasValue)
+            {
+                var date = validOnDate.Value.Date;
+                query = query.Where(p =>
+                    (!p.ValidityStart.HasValue || p.ValidityStart.Value.Date <= date) &&
+                    (!p.ValidityEnd.HasValue || p.ValidityEnd.Value.Date >= date));
+            }
+
+            switch(sortBy)
+            {
+                case "name_asc":
+                    query = query.OrderBy(p => p.Name);
+                    break;
+                case "name_desc":
+                    query = query.OrderByDescending(p => p.Name);
+                    break;
+                case "price_asc":
+                    query = query.OrderBy(p => p.Price);
+                    break;
+                case "price_desc":
+                    query = query.OrderByDescending(p => p.Price);
+                    break;            
+            }
+
+
+            if(brand != null)
+            {
+                query = query.Where(p => EF.Functions.Like(p.Brand, $"{brand}"));
+            }
+
+            
+            return await query.ToListAsync();
+        }
+
+
     public async Task<Product?> GetProductById( int productId)
     {
         return await _context.Products.FindAsync(productId);
@@ -29,11 +63,12 @@ public class ProductService(ApplicationDbContext context, CategoryService catego
     {
 
 
-        if(productsArray.Count == 0 || productsArray == null ) return false;
+        if(productsArray == null || productsArray.Count == 0) return false;
 
         int savedCount = 0;
         foreach (var item in productsArray)
         {
+            if (item == null) continue;
 
             var name =  item?["name"]?.ToString() ?? string.Empty;
             var brand =  item?["brand"]?.ToString() ?? string.Empty;
@@ -93,7 +128,6 @@ public class ProductService(ApplicationDbContext context, CategoryService catego
         return false;
     }
    
-
 
 
 }
