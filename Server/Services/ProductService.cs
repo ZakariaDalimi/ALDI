@@ -14,17 +14,9 @@ public class ProductService(ApplicationDbContext context, CategoryService catego
 
 
 
-    public async Task<dynamic> GetProducts(string? sortBy, string? brand, DateTime? validOnDate = null)
+    public async Task<dynamic> GetProducts(string? sortBy, string? brand)
         {
             IQueryable<Product> query = _context.Products.Where(p => p.IsDiscount == false);
-
-            if (validOnDate.HasValue)
-            {
-                var date = validOnDate.Value.Date;
-                query = query.Where(p =>
-                    (!p.ValidityStart.HasValue || p.ValidityStart.Value.Date <= date) &&
-                    (!p.ValidityEnd.HasValue || p.ValidityEnd.Value.Date >= date));
-            }
 
             switch(sortBy)
             {

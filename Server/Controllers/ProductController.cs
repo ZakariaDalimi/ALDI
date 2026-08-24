@@ -21,9 +21,9 @@ public class ProductController(ApplicationDbContext context, ProductService prod
 
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Product>>> GetAll([FromQuery] string? sortBy, [FromQuery] string? brand, [FromQuery] DateTime? date)
+    public async Task<ActionResult<IEnumerable<Product>>> GetAll([FromQuery] string? sortBy, [FromQuery] string? brand)
     {
-        var products = await _productService.GetProducts(sortBy, brand, date);
+        var products = await _productService.GetProducts(sortBy, brand);
         return Ok(products ?? Enumerable.Empty<Product>());
     }
 
