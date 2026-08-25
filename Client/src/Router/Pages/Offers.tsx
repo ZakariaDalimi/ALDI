@@ -3,11 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { productsQuery } from "../../api/discountedProducts";
 import { Link } from "react-router-dom";
 import { getSalePercentage } from "../../helpers/getSalePercentage";
+import FilterForm from "@/Components/FilterForm";
 
 const Offers = () => {
+  
   const { data: offers, isLoading, isError, error } = useQuery(productsQuery);
   return (
-    <div className="px-page-desktop py-gutter-desktop bg-surface">
+    <div className="px-page-desktop py-gutter-desktop bg-surface relative">
       <header className="w-full mb-4 flex flex-col gap-4">
         <h1 className="text-headline-lg text-on-primary-fixed-variant">
           Wochenangebote
@@ -92,6 +94,7 @@ const Offers = () => {
           })}
         </div>
       )}
+    
     </div>
   );
 };
