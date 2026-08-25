@@ -29,7 +29,7 @@ public class ProductController(ApplicationDbContext context, ProductService prod
 
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Product?>> GetProductDetails(int id)
+    public async Task<ActionResult<object>> GetProductDetails(int id)
     {
         var product = await _productService.GetProductById(id);
         if(product == null) return NotFound("Product not Found!");

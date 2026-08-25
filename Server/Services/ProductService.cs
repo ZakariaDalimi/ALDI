@@ -45,10 +45,54 @@ public class ProductService(ApplicationDbContext context, CategoryService catego
         }
 
 
-    public async Task<Product?> GetProductById( int productId)
+    public async Task<object?> GetProductById(int productId)
     {
-        return await _context.Products.FindAsync(productId);
+        var product = await _context.Products
+            .Include(p => p.Categories)
+            .FirstOrDefaultAsync(p => p.ProductId == productId);
+
+        if (product == null)
+            return null;
+
+        List<Product> similarProducts;    
+
+        if (product.IsDiscount){
+            similarProducts = await _context.Products
+                .Where(p => p.ProductId != product.ProductId)
+                .Where(p => p.IsDiscount == true)
+                .Where(p => p.OfferCategory == product.OfferCategory)
+                .Where(p => p.OfferSectionTitle == product.OfferSectionTitle)
+                .Take(10)
+                .ToListAsync();
+        }else{
+            var categoryIds = product.Categories
+                .Select(c => c.CategoryId)
+                .ToList();
+
+                similarProducts = await _context.Products
+                .Where(p => p.ProductId != product.ProductId)
+                .Where(p => p.Categories.Any(c => categoryIds.Contains(c.CategoryId)))
+                .Include(p => p.Categories)
+                .Select(p => new
+                {
+                    Product = p,
+                    MatchCount = p.Categories.Count(c =>
+                        categoryIds.Contains(c.CategoryId))
+                })
+                .OrderByDescending(x => x.MatchCount)
+                .Take(10)
+                .Select(x => x.Product)
+                .ToListAsync();
+        }
+
+
+        return new 
+        {
+            Product = product,
+            SimilarProducts = similarProducts
+        };
     }
+
 
 
     public async Task<bool> ImportProduct( JsonArray productsArray , int categoryId)
