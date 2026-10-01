@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Server.Services;
 using Server.Data;
-using System.Security.Claims;
+using Quartz;
+using Server.Jobs;
+
 
 
 
@@ -29,7 +31,17 @@ builder.Services.AddScoped<FilterService>();
 
 builder.Services.AddScoped<OffersService>();
 
+builder.Services.AddQuartz(q =>
+{
+    q.ScheduleJob<WeeklyImportProductsJob>(trigger => trigger
+        .WithIdentity("WeeklyImportTrigger")
+        .WithCronSchedule("0 0/5 * * * ?"));
+});
 
+builder.Services.AddQuartzHostedService(options =>
+{
+    options.WaitForJobsToComplete = true;
+});
 
 
 builder.Services.AddControllers();

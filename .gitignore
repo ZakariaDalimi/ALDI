@@ -8,11 +8,10 @@ obj/
 *.suo
 *.userosscache
 *.sln.docstates
-
 *.db
 *.db-shm
 *.db-wal
-
+!app.db
 
 # Specific project level compiled asset protection
 Server/obj/
