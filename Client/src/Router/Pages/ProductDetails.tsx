@@ -12,7 +12,8 @@ import {
 const ProductDetails = () => {
   const { id } = useParams();
   if (id !== undefined) {
-    const { data: product } = useQuery(singleProductQuery(id));
+    const { data: details } = useQuery(singleProductQuery(id));
+    const product = details?.product;
     if (product !== undefined) {
       const {
         brand,

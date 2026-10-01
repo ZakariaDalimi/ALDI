@@ -1,22 +1,16 @@
 namespace Server.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
-using Server.Data;
 using Server.Models;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Text.Json.Nodes;
 using Server.Services;
 
 [Route("api/v1/[controller]")]
 [ApiController]
-public class ProductController(ApplicationDbContext context, ProductService productService, IConfiguration configuration, CategoryService categoryService, FilterService filterService) : ControllerBase
+public class ProductController(ProductService productService, FilterService filterService) : ControllerBase
 {
-    private readonly ApplicationDbContext _context = context;
-    private readonly IConfiguration _configuration = configuration;
     private readonly ProductService _productService = productService;
-    private readonly CategoryService _categoryService = categoryService;
     private readonly FilterService _filterService = filterService;
 
 
@@ -54,69 +48,16 @@ public class ProductController(ApplicationDbContext context, ProductService prod
     [HttpGet("import")]
     public async Task<IActionResult> ImportProducts()
     {
-        var limit = 220;
+        var result = await _productService.ImportProducts();
 
-        var categories = await _categoryService.GetCategories();
-
-        if(categories.Count <= 0)
-        {
-            return BadRequest("error");
-        }
-
-    
-
-        int fetchedCount = 0;
-        int savedCount = 0;
-
-        using var client = new HttpClient();
-        var apiKey = _configuration["ApiSettings:ApiKey"];
-        var baseUrl = _configuration["ApiSettings:BaseUrl"];
-
-        if (string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(baseUrl))
-        {
+        if (result.ConfigurationMissing)
             return StatusCode(500, "API configuration is missing.");
-        }
-
-
-        await _context.Database.ExecuteSqlRawAsync("DELETE FROM CategoryProduct;");
-        await _context.Database.ExecuteSqlRawAsync("DELETE FROM sqlite_sequence WHERE name='CategoryProduct';");
-
-
-        var nonDiscountedProducts = _context.Products.Where(p => p.IsDiscount == false);
-        _context.Products.RemoveRange(nonDiscountedProducts);
-        await _context.SaveChangesAsync();
-
-        foreach(var category in categories)
-        {
-
-            var request = new HttpRequestMessage(HttpMethod.Get, $"{baseUrl}get_products_by_category?limit={limit}&category_name={category.Name}");
-            request.Headers.Add("X-API-Key", apiKey);
-
-
-            var response = await client.SendAsync(request);
-            if (!response.IsSuccessStatusCode) continue;
-            var jsonDoc = await response.Content.ReadFromJsonAsync<JsonNode>();
-
-            var productsArray = jsonDoc?["data"]?["products"]?.AsArray();
-            if (productsArray == null) continue;
-
-            fetchedCount++;
-
-            if(fetchedCount > 0 && productsArray.Count != 0)
-            {
-                bool isImported = await _productService.ImportProduct(productsArray, category.Id);
-                if(isImported) savedCount++;
-            }
-        }
-
-        if(fetchedCount > 0 && savedCount >0)
-        {
+        if (result.CategoriesMissing)
+            return BadRequest("error");
+        if (result.Imported)
             return Ok("Products data successfully imported to database.");
-        }
-        else
-        {
-            return BadRequest("API response structure was invalid or empty.");
-        }
+
+        return BadRequest("API response structure was invalid or empty.");
     }
 
 }

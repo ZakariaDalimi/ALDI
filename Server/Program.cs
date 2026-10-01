@@ -35,7 +35,7 @@ builder.Services.AddQuartz(q =>
 {
     q.ScheduleJob<WeeklyImportProductsJob>(trigger => trigger
         .WithIdentity("WeeklyImportTrigger")
-        .WithCronSchedule("0 0/5 * * * ?"));
+        .WithCronSchedule("0 0 7 ? * MON"));    // seconds, minutes, hours, day of month, month, day of week
 });
 
 builder.Services.AddQuartzHostedService(options =>
