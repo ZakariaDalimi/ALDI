@@ -1,8 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { Product } from "./discountedProducts";
 
+export interface ProductDetails {
+  product: Product;
+  similarProducts: Product[];
+}
 
-export const fetchProduct = async (id:string | number): Promise<Product> => {
+export const fetchProduct = async (id:string | number): Promise<ProductDetails> => {
  const response = await fetch(`http://localhost:5035/api/v1/Product/${id}`);
  if (!response.ok) {
     throw new Error(`Failed to fetch categories:${response.statusText}`)

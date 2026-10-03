@@ -189,6 +189,27 @@
   @apply bg-tertiary-container
 }
 
+@keyframes storefront-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.motion-rise {
+  animation: storefront-rise 620ms cubic-bezier(0.2, 0.7, 0.25, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-rise {
+    animation: none;
+  }
+}
+
 
  .swiper-pagination-bullet{
  background: #ffffff !important;

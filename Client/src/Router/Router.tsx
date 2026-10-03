@@ -8,24 +8,40 @@ import SingleCategoryPage from "./Pages/SingleCategoryPage";
 import { categoriesQuery } from "../api/categoriesQuery";
 import Offers from "./Pages/Offers";
 import ProductDetails from "./Pages/ProductDetails";
+import Products from "./Pages/Products";
+import ShoppingLists from "./Pages/ShoppingLists";
 import { productsQuery } from "../api/discountedProducts";
+import GlobalLoadingOverlay from "../Components/GlobalLoadingOverlay";
+import { ProductListsProvider } from "../Components/ProductListsContext";
+import Footer from "../Components/Footer";
 export const queryClient = new QueryClient();
 const navItems = [
   { title: "Wochenangebote", linkTo: "/offers" }, // Assuming this routes somewhere or to Root
+  { title: "Produkte", linkTo: "/products" },
   { title: "Categories", linkTo: "/categories" },
   { title: "Test", linkTo: "/test" },
 ];
 
-const Layout = () => {
+const AppContent = () => {
   return (
-    <QueryClientProvider client={queryClient}>
+    <div className="flex min-h-screen flex-col">
       <Navbar navLinks={navItems} />
-      <main className="">
+      <GlobalLoadingOverlay />
+      <main className="flex-1">
         <Outlet />
       </main>
-    </QueryClientProvider>
+      <Footer />
+    </div>
   );
 };
+
+const Layout = () => (
+  <QueryClientProvider client={queryClient}>
+    <ProductListsProvider>
+      <AppContent />
+    </ProductListsProvider>
+  </QueryClientProvider>
+);
 
 // ==========================================
 // 3. ROUTER CONFIGURATION (Defined Outside)
@@ -38,6 +54,14 @@ const router = createBrowserRouter([
       {
         index: true, // index: true means this is the default page at "/"
         Component: Root,
+      },
+      {
+        path: "products",
+        Component: Products,
+      },
+      {
+        path: "einkaufsliste",
+        Component: ShoppingLists,
       },
       {
         path: "categories",

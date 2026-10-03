@@ -1,149 +1,95 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
-import type { Swiper as SwiperType } from "swiper";
-
-import { Navigation, Pagination, EffectFade, Autoplay } from "swiper/modules";
+import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import "swiper/css/pagination";
-import "swiper/css/effect-fade";
-import { Slide } from "./Hero";
-import { Product, productsQuery } from "../api/discountedProducts";
+import { productsQuery } from "../api/discountedProducts";
 import { useQuery } from "@tanstack/react-query";
+import ProductActions from "./ProductActions";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
-interface CardsProps {
-  slides: Product[];
-}
+const formatPrice = (price: number | null) =>
+  price === null
+    ? "Preis nicht verfügbar"
+    : new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(price);
 
-const Cards: React.FC<CardsProps> = ({ slides }) => {
-  let { data: products, isLoading, isError } = useQuery(productsQuery);
-  const shuffled = products ? [...products] : [];
+const Cards = () => {
+  const { data: products = [] } = useQuery(productsQuery);
+  const featuredProducts = products.slice(0, 12);
 
-  // 2. Fisher-Yates Shuffle
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-
-  const randomProducts = shuffled.slice(0, 20);
   return (
-    <section className="my-margin-desktop px-page-desktop bg-surface py-margin-desktop">
-      <header className="flex flex-col lg:flex-row lg:items-center justify-between mb-gutter-desktop w-full gap-4">
-        <div className="w-full">
-          <h1 className="text-headline-lg text-on-primary-fixed-variant ">
-            This Week's Essentials
-          </h1>
-          <h4 className="text-headline-md text-gray-500 font-normal">
-            This Week's Essentials Lorem ipsum dolor sit amet consectetur
-            adipisicing elit. Velit quasi odio tenetur at
-          </h4>
-        </div>
-      </header>
-      <div className="mb-6 w-full flex justify-between gap-4">
-        {/* Visually on the left: This will now disable itself at the beginning */}
-        <button className="custom-next bg-secondary-container p-1 text-white shadow-md shadow-gray-300 cursor-pointer [&.swiper-button-disabled]:opacity-40 [&.swiper-button-disabled]:pointer-events-none transition-opacity duration-200">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            fill="currentColor"
-            className="bi bi-arrow-left"
-            viewBox="0 0 16 16"
+    <section className="border-y border-gray-200 bg-white py-12 md:py-16">
+      <div className="px-page-desktop">
+        <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="mb-2 text-sm font-semibold uppercase text-secondary">Für deinen Einkauf</p>
+            <h2 className="text-headline-lg text-on-primary-fixed-variant">Aktuelle Wochenangebote</h2>
+          </div>
+          <Link
+            className="inline-flex min-h-11 items-center border-b-2 border-secondary px-1 font-semibold text-primary hover:text-secondary"
+            to="/offers"
           >
-            <path
-              fillRule="evenodd"
-              d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"
-            />
-          </svg>
-        </button>
+            Alle Angebote <span aria-hidden="true" className="ml-2">→</span>
+          </Link>
+        </header>
 
-        {/* Visually on the right: This will slide you forward */}
-        <button className="custom-prev bg-secondary-container p-1 text-white shadow-md shadow-gray-300 cursor-pointer [&.swiper-button-disabled]:opacity-40 [&.swiper-button-disabled]:pointer-events-none transition-opacity duration-200">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            fill="currentColor"
-            className="bi bi-arrow-right"
-            viewBox="0 0 16 16"
-          >
-            <path
-              fillRule="evenodd"
-              d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
-            />
-          </svg>
+      <div className="mb-4 flex justify-end gap-2">
+        <button aria-label="Vorherige Produkte" title="Vorherige Produkte" className="featured-prev grid size-10 place-items-center border border-gray-300 text-primary hover:bg-primary hover:text-white [&.swiper-button-disabled]:cursor-not-allowed [&.swiper-button-disabled]:opacity-40">
+          <ArrowLeft size={18} aria-hidden="true" />
+        </button>
+        <button aria-label="Weitere Produkte" title="Weitere Produkte" className="featured-next grid size-10 place-items-center border border-gray-300 text-primary hover:bg-primary hover:text-white [&.swiper-button-disabled]:cursor-not-allowed [&.swiper-button-disabled]:opacity-40">
+          <ArrowRight size={18} aria-hidden="true" />
         </button>
       </div>
 
-      {randomProducts?.length > 0 && (
+      {featuredProducts.length > 0 && (
         <Swiper
-          modules={[Navigation, Pagination, Autoplay]}
-          slidesPerView={1.2} // Shows a peek of the next card on mobile viewports
-          spaceBetween={24}
+          modules={[Navigation]}
+          slidesPerView={1.4}
+          spaceBetween={16}
           breakpoints={{
-            640: { slidesPerView: 2.3 },
+            640: { slidesPerView: 2.2 },
             1024: { slidesPerView: 3.5 },
-            1280: { slidesPerView: 5.5 }, // FIX: Changed from 5 to 5.5 for large screens
+            1280: { slidesPerView: 4.5 },
           }}
           navigation={{
-            prevEl: ".custom-next",
-            nextEl: ".custom-prev",
+            prevEl: ".featured-prev",
+            nextEl: ".featured-next",
           }}
-          className="w-full !py-4 px-8"
+          className="w-full !py-3"
         >
-          {randomProducts.map((slide, i) => {
-
-            
-            return (
-         
-              <SwiperSlide
-                key={slide?.productId | i}
-      
-                className="relative !h-auto flex flex-col bg-white pt-4 px-2 shadow-md shadow-gray-400 after:absolute after:bottom-0 after:left-0 after:h-[3px] after:w-0 after:bg-secondary-container after:transition-all after:duration-300 hover:after:w-full"
-              >
-                <Link to={`/offers/${slide?.productId}`} className="flex flex-col h-full w-full">
-                <img
-                  src={slide?.imageUrl}
-                  alt=""
-                  className="object-cover mb-4 h-auto w-[90%] mx-auto shadow-md shadow-gray-200 "
-                />
-
-                <div className="p-4 text-primary bg-white flex-grow flex flex-col justify-between">
-                  <div>
-                    <h3 className="font-bold text-on-primary-fixed-variant text-2xl mb-2">
-                      {slide.name}
-                    </h3>
-                    <p className="text-sm">{slide.offerSectionTitle}</p>
-                  </div>
-
-                  <div className="mt-4">
-                    <p className="text-lg font-bold">
-                      <span className="text-4xl ! text-secondary-container mr-2">
-                        {slide.price}
-                      </span>
-                      €
-                    </p>
-                    <div className="p-1 font-bold">
-                      <p className="">{slide?.salesUnit}</p>
-                    </div>
-                  </div>
+          {featuredProducts.map((product, index) => (
+            <SwiperSlide key={product.productId} className="!h-auto">
+              <article style={{ animationDelay: `${(index % 6) * 70}ms` }} className="motion-rise flex h-full flex-col border border-gray-200 bg-white">
+                <div className="relative grid aspect-[4/3] place-items-center bg-gray-50 p-4">
+                  <Link to={`/offers/${product.productId}`} className="grid h-full w-full place-items-center">
+                    <img src={product.imageUrl} alt={product.name} loading="lazy" className="max-h-full max-w-full object-contain" />
+                  </Link>
+                  <ProductActions product={product} className="absolute right-2 top-2" />
+                  {product.originalPrice !== null && product.originalPrice > 0 && product.price !== null && (
+                    <span className="absolute bottom-2 left-2 bg-secondary-container px-2 py-1 text-sm font-bold text-white">
+                      Spare {Math.round((1 - product.price / product.originalPrice) * 100)}%
+                    </span>
+                  )}
                 </div>
-                </Link>
-              </SwiperSlide>
-              
-
-            );
-          })}
+                <div className="flex grow flex-col p-4">
+                  {product.brand && <p className="text-xs uppercase text-gray-500">{product.brand}</p>}
+                  <Link to={`/offers/${product.productId}`} className="mt-1 font-semibold text-on-primary-fixed-variant">
+                    {product.name}
+                  </Link>
+                  <div className="mt-auto flex items-baseline gap-2 pt-4">
+                    <span className="text-xl font-bold text-primary">{formatPrice(product.price)}</span>
+                    {product.originalPrice !== null && product.originalPrice > 0 && (
+                      <span className="text-sm text-gray-500 line-through">{formatPrice(product.originalPrice)}</span>
+                    )}
+                  </div>
+                  {product.salesUnit && <p className="mt-1 text-sm text-gray-600">{product.salesUnit}</p>}
+                </div>
+              </article>
+            </SwiperSlide>
+          ))}
         </Swiper>
       )}
-      <div className="my-4 grid place-items-center">
-        <Link
-          className="relative p-2 bg-primary-container text-white after:absolute after:bottom-0 after:left-0 after:h-1 after:w-0 after:bg-secondary-container after:transition-all after:duration-300 hover:after:w-full"
-          to="/offers"
-        >
-          See more 
-        </Link>
       </div>
     </section>
   );
