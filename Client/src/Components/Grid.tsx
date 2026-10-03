@@ -1,97 +1,86 @@
-import React from "react";
-import aldi1 from "../assets/aldi-hero.png";
-import aldi2 from "../assets/aldi-hero2.png";
-import cat from "../assets/cat1.png";
-import ananas from "../assets/ananas.png";
-import green from "../assets/green.png";
-import brott from "../assets/brott.png";
-import milch from "../assets/milch.png";
-
 import { Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import { categoriesQuery } from "../api/categoriesQuery";
+import { catalogProductsQuery, ProductFilters } from "@/api/catalogProducts";
+
+const emptyFilters: ProductFilters = {
+  sortBy: "",
+  categoryId: "",
+  minPrice: "",
+  maxPrice: "",
+};
 
 const Grid = () => {
-  let { data: categories, isLoading, isError } = useQuery(categoriesQuery);
-  categories = categories?.slice(0, 4) || [];
+  const { data: categories = [] } = useQuery(categoriesQuery);
+  const sortedCategories = [...categories].sort((first, second) =>
+    first.name.localeCompare(second.name, "de"),
+  );
+  const productQueries = useQueries({
+    queries: sortedCategories.map((category) =>
+      catalogProductsQuery({
+        ...emptyFilters,
+        categoryId: String(category.categoryId),
+      }),
+    ),
+  });
+  const featuredCategories = sortedCategories
+    .map((category, index) => ({
+      category,
+      products: productQueries[index]?.data,
+    }))
+    .filter((item) => (item.products?.length ?? 0) > 0)
+    .slice(0, 6);
 
   return (
-    <section className="px-page-desktop mb-gutter-desktop">
-      <header className="flex flex-col lg:flex-row lg:items-center justify-between mb-gutter-desktop w-full gap-4">
-        <div className="w-full">
-          <h1 className="text-headline-lg text-black ">Browse Categories</h1>
-          <h4 className="text-headline-md text-gray-500 font-normal">
-            Browse Categories Lorem ipsum dolor sit amet consectetur adipisicing
-            elit. Velit quasi odio tenetur at
-          </h4>
+    <section className="mb-12 px-page-desktop">
+      <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="mb-2 text-sm font-semibold uppercase text-secondary">Finde dein Sortiment</p>
+          <h2 className="text-headline-lg text-on-primary-fixed-variant">Einkaufen nach Kategorie</h2>
         </div>
-        <div className="w-full flex lg:justify-end justify-start">
-          <Link
-            className="p-4  hover:opacity-70 bg-secondary-container text-white transition-ease duration-400 flex items-center gap-2 text-primary font-bold w-fit"
-            to="/categories"
-          >
-            View All
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="currentColor"
-              className="bi bi-chevron-right"
-              viewBox="0 0 16 16"
-            >
-              <path
-                fillRule="evenodd"
-                d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"
-              />
-            </svg>
-          </Link>
-        </div>
+        <Link
+          className="inline-flex min-h-11 items-center border-b-2 border-secondary px-1 font-semibold text-primary hover:text-secondary"
+          to="/categories"
+        >
+          Alle Kategorien ansehen <span aria-hidden="true" className="ml-2">→</span>
+        </Link>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-[2rem] auto-rows-[250px] lg:grid-rows-[170px_220px] xl:grid-rows-[280px_300px] ">
-        <Link to={`categories/${categories[0]?.name.replace(/\s/g, '').toLowerCase()}`}
-          className="card relative  lg:row-span-2 lg:col-span-2 bg-no-repeat bg-cover bg-center shadow-md shadow-black/20"
-          style={{ backgroundImage: `url(${ananas})` }}
-        >
-          <div className="card-content cursor-pointer duration-300 bottom-0 bg-primary-container/100 absolute w-full min-h-1/6 grid place-items-center">
-            <h4 className="text-white text-3xl font-bold">
-              {categories[0]?.name}
-            </h4>
-          </div>
-        </Link>
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
+        {featuredCategories.map(({ category, products }, index) => {
+          const image = products?.[0]?.imageUrl;
+          const productCount = products?.length ?? 0;
 
-        <Link to={`categories/${categories[3]?.name.replace(/\s/g, '').toLowerCase()}`}
-          className="relative card  bg-no-repeat bg-cover bg-center shadow-md shadow-black/20"
-          style={{ backgroundImage: `url(${milch})` }}
-        >
-          <div className="card-content cursor-pointer duration-300 bottom-0 bg-primary-container/100 absolute w-full min-h-1/6 grid place-items-center">
-            <h4 className="text-white text-xl font-bold">
-              {categories[3]?.name}
-            </h4>
-          </div>
-        </Link>
-
-        <Link to={`categories/${categories[2]?.name.replace(/\s/g, '').toLowerCase()}`}
-          className="card relative  bg-no-repeat bg-cover bg-center shadow-md shadow-black/20"
-          style={{ backgroundImage: `url(${brott})` }}
-        >
-          <div className="card-content cursor-pointer duration-300 bottom-0 bg-primary-container/100 absolute w-full min-h-1/6 grid place-items-center">
-            <h4 className="text-white text-xl font-bold">
-              {categories[2]?.name}
-            </h4>
-          </div>
-        </Link>
-
-        <Link to={`categories/${categories[1]?.name.replace(/\s/g, '').toLowerCase()}`}
-          className="card relative  lg:col-span-2 bg-no-repeat bg-cover bg-center shadow-md shadow-black/20"
-          style={{ backgroundImage: `url(${green})` }}
-        > 
-          <div className="card-content cursor-pointer duration-300 bottom-0 bg-primary-container/100 absolute w-full min-h-1/6 grid place-items-center">
-            <h4 className="text-white text-xl font-bold">
-              {categories[1]?.name}
-            </h4>
-          </div>
-        </Link>
+          return (
+            <Link
+              key={category.categoryId}
+              to={`/categories/${category.categoryId}`}
+              style={{ animationDelay: `${index * 90}ms` }}
+              className={`motion-rise group relative isolate min-h-48 overflow-hidden bg-tertiary-container sm:min-h-60 ${index === 0 ? "col-span-2 md:col-span-1 md:row-span-2 md:min-h-[31rem]" : ""}`}
+            >
+              {image && (
+                <img
+                  src={image}
+                  alt=""
+                  loading="lazy"
+                  className="absolute inset-0 -z-10 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              )}
+              <div className="absolute inset-0 -z-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4 text-white md:p-5">
+                <div>
+                  <h3 className="text-lg font-bold md:text-xl">{category.name}</h3>
+                  <p className="mt-1 text-sm text-white/80">
+                    {productCount} Produkte
+                  </p>
+                </div>
+                <span className="grid size-9 shrink-0 place-items-center bg-secondary-container text-white transition-transform group-hover:translate-x-1" aria-hidden="true">
+                  →
+                </span>
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );

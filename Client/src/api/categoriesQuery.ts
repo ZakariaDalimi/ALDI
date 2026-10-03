@@ -17,7 +17,7 @@ export const fetchCategories = async (): Promise<Category[]> => {
 export const categoriesQuery = {
     queryKey:['categories'] as const, 
     queryFn: fetchCategories,
-    staleTime: 100 * 60 * 5, // data stays fresh for 5 mins
+    staleTime: 5 * 60 * 1000,
 }
 
  

@@ -17,35 +17,48 @@ public class ProductService(ApplicationDbContext context, CategoryService catego
 
 
 
-    public async Task<dynamic> GetProducts(string? sortBy, string? brand)
+    public async Task<List<Product>> GetProducts(
+        string? sortBy,
+        string? brand,
+        int? categoryId,
+        decimal? minPrice,
+        decimal? maxPrice)
+    {
+        IQueryable<Product> query = _context.Products
+            .Include(p => p.Categories)
+            .Where(p => !p.IsDiscount);
+
+        if (!string.IsNullOrWhiteSpace(brand))
         {
-            IQueryable<Product> query = _context.Products.Where(p => p.IsDiscount == false);
-
-            switch(sortBy)
-            {
-                case "name_asc":
-                    query = query.OrderBy(p => p.Name);
-                    break;
-                case "name_desc":
-                    query = query.OrderByDescending(p => p.Name);
-                    break;
-                case "price_asc":
-                    query = query.OrderBy(p => p.Price);
-                    break;
-                case "price_desc":
-                    query = query.OrderByDescending(p => p.Price);
-                    break;            
-            }
-
-
-            if(brand != null)
-            {
-                query = query.Where(p => EF.Functions.Like(p.Brand, $"{brand}"));
-            }
-
-            
-            return await query.ToListAsync();
+            query = query.Where(p => EF.Functions.Like(p.Brand, $"%{brand.Trim()}%"));
         }
+
+        if (categoryId.HasValue)
+        {
+            query = query.Where(p => p.Categories.Any(c => c.CategoryId == categoryId.Value));
+        }
+
+        if (minPrice.HasValue)
+        {
+            query = query.Where(p => p.Price >= minPrice.Value);
+        }
+
+        if (maxPrice.HasValue)
+        {
+            query = query.Where(p => p.Price <= maxPrice.Value);
+        }
+
+        query = sortBy switch
+        {
+            "name_asc" => query.OrderBy(p => p.Name),
+            "name_desc" => query.OrderByDescending(p => p.Name),
+            "price_asc" => query.OrderBy(p => p.Price),
+            "price_desc" => query.OrderByDescending(p => p.Price),
+            _ => query
+        };
+
+        return await query.ToListAsync();
+    }
 
 
     public async Task<object?> GetProductById(int productId)

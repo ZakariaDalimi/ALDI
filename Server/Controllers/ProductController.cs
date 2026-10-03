@@ -15,9 +15,20 @@ public class ProductController(ProductService productService, FilterService filt
 
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Product>>> GetAll([FromQuery] string? sortBy, [FromQuery] string? brand)
+    public async Task<ActionResult<IEnumerable<Product>>> GetAll(
+        [FromQuery] string? sortBy,
+        [FromQuery] string? brand,
+        [FromQuery] int? categoryId,
+        [FromQuery] decimal? minPrice,
+        [FromQuery] decimal? maxPrice)
     {
-        var products = await _productService.GetProducts(sortBy, brand);
+        if (minPrice.HasValue && minPrice.Value < 0 || maxPrice.HasValue && maxPrice.Value < 0)
+            return BadRequest("Prices must be zero or greater.");
+
+        if (minPrice.HasValue && maxPrice.HasValue && minPrice.Value > maxPrice.Value)
+            return BadRequest("minPrice cannot be greater than maxPrice.");
+
+        var products = await _productService.GetProducts(sortBy, brand, categoryId, minPrice, maxPrice);
         return Ok(products ?? Enumerable.Empty<Product>());
     }
 

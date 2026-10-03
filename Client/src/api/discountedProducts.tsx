@@ -2,18 +2,19 @@ import { useQuery } from "@tanstack/react-query";
 
 export interface Product {
   productId: number;
-  price: number;
+  price: number | null;
   name: string;
   imageUrl:string;
   isDiscount:boolean;
   salesUnit:string;
-  originalPrice:number;
-  offerCategory:string;
-  offerSectionTitle:string;
-  validityStart:string;
-  validityEnd:string;
+  originalPrice:number | null;
+  offerCategory:string | null;
+  offerSectionTitle:string | null;
+  validityStart:string | null;
+  validityEnd:string | null;
   brand?:string;
   OfferSectionTitle?:string;
+  categories?: { categoryId: number; name: string }[];
 }
 
 export const fetchProducts = async (): Promise<Product[]> => {
@@ -27,7 +28,7 @@ export const fetchProducts = async (): Promise<Product[]> => {
 export const productsQuery = {
     queryKey:['products'] as const, 
     queryFn: fetchProducts,
-    staleTime: 100 * 60 * 5, // data stays fresh for 5 mins
+    staleTime: 5 * 60 * 1000,
 }
 
  

@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper";
-// 1. Added Autoplay to the modules import
-import { Navigation, Pagination, EffectFade, Autoplay } from "swiper/modules"; 
+import { Link } from "react-router-dom";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { Navigation, Pagination, EffectFade, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation"; 
 import "swiper/css/pagination"; 
@@ -13,6 +14,8 @@ export type Slide = {
   title?: string;
   subtitle?: string;
   description?: string;
+  actionLabel?: string;
+  linkTo?: string;
 };
 
 export interface HeroProps {
@@ -29,46 +32,52 @@ const Hero: React.FC<HeroProps> = ({ slides }) => {
   const currentSlide = slides[activeIndex] || slides[0];
 
   return (
-    <section className="mb-margin-desktop relative w-full h-[70vh] group overflow-hidden bg-neutral-900">
+    <section aria-label="ALDI entdecken" className="group relative mb-16 h-[65svh] min-h-[440px] max-h-[760px] w-full overflow-hidden bg-neutral-900">
       {slides && slides.length > 0 && (
         <>
           {/* Text Overlay Layer */}
-          <div className="absolute inset-0 z-10 pointer-events-none flex items-center px-page-desktop">
-            <div className="absolute inset-0 bg-black/40 z-0 pointer-events-none" />
+          <div className="pointer-events-none absolute inset-0 z-10 flex items-center px-page-desktop">
+            <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-r from-black/75 via-black/40 to-black/5" />
 
-            <header className="relative z-10 text-white flex flex-col justify-center items-start gap-4 max-w-full pb-12 transition-all duration-300 ease-in-out">
+            <header key={activeIndex} className="motion-rise pointer-events-auto relative z-10 flex max-w-2xl flex-col items-start gap-4 pb-12 text-white transition-all duration-300 ease-in-out">
               {currentSlide?.title && (
-                <h4 className="text-md xl:text-xl font-bold tracking-wide p-[0.5rem] btn-secondary opacity-100 !text-white transform transition-all duration-300">
+                <p className="bg-secondary-container px-3 py-1 text-sm font-bold text-white">
                   {currentSlide.title}
-                </h4>
+                </p>
               )}
           
               {currentSlide?.subtitle && (
-                <h2 className="text-white/80 text-3xl xl:text-6xl font-extrabold tracking-tight break-words xl:max-w-3xl">
+                <h1 className="break-words text-4xl font-extrabold text-white sm:text-5xl xl:text-6xl">
                   {currentSlide.subtitle}
-                </h2>
+                </h1>
               )}
 
               {currentSlide?.description && (
-                <p className="max-w-full xl:max-w-xl text-white/90 text-base xl:text-lg">
+                <p className="max-w-xl text-base text-white/90 xl:text-lg">
                   {currentSlide.description}
                 </p>
+              )}
+              {currentSlide?.linkTo && currentSlide.actionLabel && (
+                <Link
+                  to={currentSlide.linkTo}
+                  className="mt-2 inline-flex min-h-12 items-center bg-white px-5 font-semibold text-primary transition-colors hover:bg-secondary-container hover:text-white"
+                >
+                  {currentSlide.actionLabel}
+                  <ArrowRight className="ml-3" size={18} aria-hidden="true" />
+                </Link>
               )}
             </header>
           </div>
 
           <Swiper 
             slidesPerView={1}
-            // 2. Added Autoplay here inside the modules array
             modules={[Navigation, Pagination, EffectFade, Autoplay]} 
             effect={"fade"}
             fadeEffect={{ crossFade: true }}
             loop={true}
             onSlideChange={handleSlideChange}
-            // 3. Enabled autoplay with a realistic reading delay (5000ms = 5s)
-            // disableOnInteraction: false keeps it running even if a user clicks a nav arrow
             autoplay={{
-              delay: 3000,
+              delay: 6000,
               disableOnInteraction: false,
             }}
             navigation={{
@@ -95,16 +104,12 @@ const Hero: React.FC<HeroProps> = ({ slides }) => {
             ))}
 
             {/* Navigation Controls */}
-            <button className="btn-secondary custom-prev absolute left-4 top-1/2 -translate-y-1/2 z-20 hover:bg-white/40 text-white p-3 rounded-full transition-all opacity-0 group-hover:opacity-100 pointer-events-auto cursor-pointer">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-              </svg>
+            <button aria-label="Vorheriges Angebot" title="Vorheriges Angebot" className="custom-prev pointer-events-auto absolute left-4 top-1/2 z-20 -translate-y-1/2 cursor-pointer bg-black/40 p-3 text-white opacity-0 transition-all hover:bg-black/70 group-hover:opacity-100">
+              <ArrowLeft size={22} aria-hidden="true" />
             </button>
 
-            <button className="btn-secondary custom-next absolute right-4 top-1/2 -translate-y-1/2 z-20 hover:bg-white/40 text-white p-3 rounded-full transition-all opacity-0 group-hover:opacity-100 pointer-events-auto cursor-pointer">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-              </svg>
+            <button aria-label="Nächstes Angebot" title="Nächstes Angebot" className="custom-next pointer-events-auto absolute right-4 top-1/2 z-20 -translate-y-1/2 cursor-pointer bg-black/40 p-3 text-white opacity-0 transition-all hover:bg-black/70 group-hover:opacity-100">
+              <ArrowRight size={22} aria-hidden="true" />
             </button>
           </Swiper>
         </>

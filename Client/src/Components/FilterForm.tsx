@@ -1,66 +1,107 @@
-import React from "react";
-import { Product } from "../api/discountedProducts";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "./ui/accordion";
+import { FormEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Filter, RotateCcw } from "lucide-react";
 import { categoriesQuery } from "@/api/categoriesQuery";
+import { ProductFilters } from "@/api/catalogProducts";
 
 interface Props {
-  show?: boolean;
-  data?: Product[] | undefined;
-  filterParams?: {
-    category: string;
-    brand: string;
-    sortType: string;
-  }[];
+  filters: ProductFilters;
+  error?: string;
+  onChange: (name: keyof ProductFilters, value: string) => void;
+  onApply: (event: FormEvent<HTMLFormElement>) => void;
+  onReset: () => void;
 }
 
-const FilterForm: React.FC<Props> = ({ data, filterParams, show }) => {
-  const { data: categories } = useQuery(categoriesQuery);
-  const containerShow = show
-    ? "opacity-100 pointer-events-auto"
-    : "opacity-0 pointer-events-none";
-  const formShow = show ? " translate-x-0" : "-translate-x-full";
+const FilterForm = ({ filters, error, onChange, onApply, onReset }: Props) => {
+  const { data: categories = [] } = useQuery(categoriesQuery);
+
   return (
-    <div className={`absolute top-0 w-full min-h-full  ${containerShow}`} >
-      <div className={`min-w-[40vh] h-full bg-white p-4 ${formShow}`}>
-        <h3 className="text-3xl">Soriteren nach</h3>
-        <select name="" id="">
-          <option value="AZ">Name A bis Z</option>
-          <option value="ZA">Name Z bis A</option>
-          <option value="price-min">Preis (Niedrig bis Hoch)</option>
-          <option value="price-max">Preis (Hoch bis Niedrig)</option>
-        </select>
-        <Accordion
-          type="single"
-          collapsible
-          defaultValue="category"
-          className="max-w-lg"
+    <form onSubmit={onApply} className="border border-gray-200 bg-white p-5">
+      <div className="mb-5 flex items-center justify-between border-b border-gray-200 pb-4">
+        <h2 className="text-xl font-bold text-on-primary-fixed-variant">Filter</h2>
+        <button
+          type="button"
+          onClick={onReset}
+          className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-black"
         >
-          <AccordionItem value="category">
-            <AccordionTrigger>
-              <h3 className="text-2xl text-black font-bold">Kategorie</h3>
-              <AccordionContent>
-                <ul className="grid grid-cols-1 md:grid-cols-2">
-                  {categories?.map((cat) => {
-                    const { name, categoryId } = cat;
-                    return (
-                      <li key={categoryId} className="text-white grid place-items-center bg-blue-100 p-4 rounded-lg">
-                         {name}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </AccordionContent>
-            </AccordionTrigger>
-          </AccordionItem>
-        </Accordion>
+          <RotateCcw aria-hidden="true" size={16} />
+          Zurücksetzen
+        </button>
       </div>
-    </div>
+
+      <div className="grid gap-5">
+        <label className="grid gap-2 text-sm font-medium">
+          Sortieren nach
+          <select
+            value={filters.sortBy}
+            onChange={(event) => onChange("sortBy", event.target.value)}
+            className="min-h-11 border border-gray-300 bg-white px-3"
+          >
+            <option value="">Standard</option>
+            <option value="name_asc">Name: A bis Z</option>
+            <option value="name_desc">Name: Z bis A</option>
+            <option value="price_asc">Preis: niedrig bis hoch</option>
+            <option value="price_desc">Preis: hoch bis niedrig</option>
+          </select>
+        </label>
+
+        <label className="grid gap-2 text-sm font-medium">
+          Kategorie
+          <select
+            value={filters.categoryId}
+            onChange={(event) => onChange("categoryId", event.target.value)}
+            className="min-h-11 border border-gray-300 bg-white px-3"
+          >
+            <option value="">Alle Kategorien</option>
+            {categories.map((category) => (
+              <option key={category.categoryId} value={category.categoryId}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <fieldset className="grid gap-2">
+          <legend className="mb-2 text-sm font-medium">Preis (€)</legend>
+          <div className="grid grid-cols-2 gap-3">
+            <label className="grid gap-1 text-xs text-gray-600">
+              Von
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={filters.minPrice}
+                onChange={(event) => onChange("minPrice", event.target.value)}
+                placeholder="Min."
+                className="min-h-11 w-full border border-gray-300 px-3 text-sm text-black"
+              />
+            </label>
+            <label className="grid gap-1 text-xs text-gray-600">
+              Bis
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={filters.maxPrice}
+                onChange={(event) => onChange("maxPrice", event.target.value)}
+                placeholder="Max."
+                className="min-h-11 w-full border border-gray-300 px-3 text-sm text-black"
+              />
+            </label>
+          </div>
+        </fieldset>
+
+        {error && <p className="text-sm text-red-700" role="alert">{error}</p>}
+
+        <button
+          type="submit"
+          className="inline-flex min-h-11 items-center justify-center gap-2 bg-primary px-4 font-semibold text-white hover:opacity-90"
+        >
+          <Filter aria-hidden="true" size={18} />
+          Filter anwenden
+        </button>
+      </div>
+    </form>
   );
 };
 
