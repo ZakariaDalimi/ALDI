@@ -33,8 +33,4 @@ Build the project:
 dotnet build
 ```
 
-Apply the Entity Framework Core migrations and update the database:
 
-```bash
-dotnet ef database update
-```
