@@ -11,7 +11,7 @@
   --color-surface-bright: #f9f9f9;
   --color-surface-variant: #e2e2e2;
   --color-surface-tint: #485c96;
-  
+
   --color-surface-container-lowest: #ffffff;
   --color-surface-container-low: #f3f3f3;
   --color-surface-container: #eeeeee;
@@ -89,8 +89,7 @@
   --spacing-stack-sm: 8px;
   --spacing-stack-md: 16px;
   --spacing-stack-lg: 32px;
-  --spacing-page-desktop:10%;
-  
+  --spacing-page-desktop: 10%;
 }
 
 @media (min-width: 1536px) {
@@ -103,7 +102,7 @@
    TYPOGRAPHY & BRAND UTILITY CLASSES
    ========================================== */
 @utility text-display-price {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 48px;
   font-weight: 800;
   line-height: 48px;
@@ -111,12 +110,12 @@
 }
 
 @utility text-headline-lg {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 32px;
   font-weight: 700;
   line-height: 40px;
   letter-spacing: -0.01em;
-  
+
   /* Responsive breakpoint shift embedded directly using v4 rules */
   @media (max-width: 767px) {
     font-size: 24px;
@@ -125,48 +124,47 @@
 }
 
 @utility text-headline-md {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 20px;
   font-weight: 600;
   line-height: 28px;
 }
 @utility text-headline-sm {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 28px;
 }
 
 @utility text-body-lg {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
 }
 
 @utility text-body-sm {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 14px;
   font-weight: 400;
   line-height: 20px;
 }
 
 @utility text-label-bold {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 12px;
   font-weight: 700;
   line-height: 16px;
 }
 
 @utility text-label-mono {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 11px;
   font-weight: 500;
   line-height: 14px;
 }
 
 .nav-link {
-
   @apply relative pb-2 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:bg-secondary after:w-0 after:transition-all after:duration-350;
   @apply hover:after:w-full;
 }
@@ -176,17 +174,26 @@
 }
 
 .hero-bg {
-  @apply bg-no-repeat bg-center bg-cover saturate-50 min-h-[70vh]
+  @apply bg-no-repeat bg-center bg-cover saturate-50 min-h-[70vh];
 }
 
 .btn-primary {
-  @apply bg-primary
+  @apply bg-primary;
 }
 .btn-secondary {
-  @apply bg-secondary-container text-black !opacity-100
+  @apply bg-secondary-container text-black !opacity-100;
 }
 .btn-tertiary {
-  @apply bg-tertiary-container
+  @apply bg-tertiary-container;
+}
+
+.aldi-toaster [data-sonner-toast][data-styled="true"] {
+  padding-right: 44px;
+}
+
+.aldi-toaster [data-sonner-toast][data-styled="true"] [data-close-button] {
+  inset: 8px 8px auto auto;
+  transform: none;
 }
 
 @keyframes storefront-rise {
@@ -210,38 +217,32 @@
   }
 }
 
-
- .swiper-pagination-bullet{
- background: #ffffff !important;
+.swiper-pagination-bullet {
+  background: #ffffff !important;
   opacity: 0.5;
   width: 15px !important; /* Default Swiper bullet width */
   height: 15px !important;
-  
+
   /* Use 'transition' shorthand correctly */
   transition: all 0.5s ease-in-out !important;
 
   opacity: 1 !important;
-
-
 }
 
 .swiper-pagination-bullet-active {
-
 }
 
-
- .swiper-pagination-bullet-active {
+.swiper-pagination-bullet-active {
   background: #ff8200 !important;
   opacity: 1;
   width: 70px !important;
   border-radius: 10px !important;
-
 }
 
 .card {
   position: relative; /* Ensures absolute positioning works correctly if needed */
   cursor: pointer;
-  overflow: hidden;   /* Keeps moving elements contained */
+  overflow: hidden; /* Keeps moving elements contained */
 }
 
 /* 1. The Container / Background */
@@ -251,25 +252,26 @@
   left: 0;
   width: 100%;
   opacity: 0;
-  
-  transition: opacity 0.3s ease, bottom 0.3s ease;
-}
 
+  transition:
+    opacity 0.3s ease,
+    bottom 0.3s ease;
+}
 
 .card-content h3,
 .card-content p {
   opacity: 0;
   transform: translateY(10px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  transition-delay: 0.15s; 
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+  transition-delay: 0.15s;
 }
-
 
 .card:hover .card-content {
   opacity: 1;
   bottom: 0%;
 }
-
 
 .card:hover .card-content h3,
 .card:hover .card-content p {

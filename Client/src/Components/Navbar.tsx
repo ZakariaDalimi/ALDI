@@ -1,10 +1,24 @@
 import { useEffect, useState } from "react";
 import Logo from "./Logo";
 import { Link, NavLink } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import { Search, ShoppingBasket, X } from "lucide-react";
 import { productSearchQuery } from "@/api/productSearch";
 import { useProductLists } from "./ProductListsContext";
+import { productsQuery } from "@/api/discountedProducts";
+import { categoriesQuery } from "@/api/categoriesQuery";
+import {
+  catalogProductsQuery,
+  type ProductFilters,
+} from "@/api/catalogProducts";
+
+type PreviewMenu = "products" | "categories";
+const emptyFilters: ProductFilters = {
+  sortBy: "",
+  categoryId: "",
+  minPrice: "",
+  maxPrice: "",
+};
 
 interface Props {
   navLinks: { title: string; linkTo: string }[];
@@ -22,6 +36,7 @@ const Navbar = ({ navLinks }: Props) => {
   const [searchText, setSearchText] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState<PreviewMenu | null>(null);
   const normalizedSearch = searchText.trim();
 
   useEffect(() => {
@@ -41,6 +56,41 @@ const Navbar = ({ navLinks }: Props) => {
     enabled: debouncedSearch.length >= 2,
   });
 
+  const {
+    data: previewProducts = [],
+    isFetching: productsLoading,
+    isError: productsFailed,
+  } = useQuery({ ...productsQuery, enabled: activeMenu === "products" });
+  const {
+    data: categories = [],
+    isFetching: categoriesLoading,
+    isError: categoriesFailed,
+  } = useQuery({ ...categoriesQuery, enabled: activeMenu === "categories" });
+  const sortedCategories = [...categories].sort((first, second) =>
+    first.name.localeCompare(second.name, "de"),
+  );
+  const categoryProductQueries = useQueries({
+    queries: sortedCategories.map((category) => ({
+      ...catalogProductsQuery({
+        ...emptyFilters,
+        categoryId: String(category.categoryId),
+      }),
+      enabled: activeMenu === "categories",
+    })),
+  });
+  const previewCategories = sortedCategories
+    .map((category, index) => ({
+      category,
+      products: categoryProductQueries[index]?.data ?? [],
+    }))
+    .filter(({ products }) => products.length > 0)
+    .slice(0, 6);
+  const previewCategoriesLoading =
+    categoriesLoading ||
+    categoryProductQueries.some((query) => query.isFetching);
+  const previewCategoriesFailed =
+    categoriesFailed || categoryProductQueries.some((query) => query.isError);
+
   const handleResultClick = () => {
     setSearchText("");
     setDebouncedSearch("");
@@ -54,16 +104,164 @@ const Navbar = ({ navLinks }: Props) => {
       </Link>
       <nav className="min-w-0 flex-1 pl-stack-md" aria-label="Hauptnavigation">
         <ul className="flex flex-wrap gap-x-gutter-desktop">
-          {navLinks.map((item) => (
-            <li className="text-headline-sm text-inverse-on-surface" key={item.title}>
-              <NavLink
-                className={({ isActive }) => isActive ? "nav-link nav-active" : "nav-link"}
-                to={item.linkTo}
+          {navLinks.map((item) => {
+            const previewMenu: PreviewMenu | null =
+              item.linkTo === "/products"
+                ? "products"
+                : item.linkTo === "/categories"
+                  ? "categories"
+                  : null;
+
+            return (
+              <li
+                className="relative text-headline-sm text-inverse-on-surface"
+                key={item.title}
+                onMouseEnter={() => setActiveMenu(previewMenu)}
+                onMouseLeave={() => setActiveMenu(null)}
+                onFocus={() => previewMenu && setActiveMenu(previewMenu)}
+                onBlur={(event) => {
+                  const nextTarget = event.relatedTarget;
+                  if (
+                    !(nextTarget instanceof Node) ||
+                    !event.currentTarget.contains(nextTarget)
+                  ) {
+                    setActiveMenu(null);
+                  }
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === "Escape") setActiveMenu(null);
+                }}
               >
-                {item.title}
-              </NavLink>
-            </li>
-          ))}
+                <NavLink
+                  className={({ isActive }) =>
+                    isActive ? "nav-link nav-active" : "nav-link"
+                  }
+                  to={item.linkTo}
+                  aria-haspopup={previewMenu ? "true" : undefined}
+                  aria-expanded={
+                    previewMenu ? activeMenu === previewMenu : undefined
+                  }
+                >
+                  {item.title}
+                </NavLink>
+
+                {activeMenu === "products" && previewMenu === "products" && (
+                  <div className="absolute left-0 top-full z-50 w-[min(520px,calc(100vw-2rem))] border border-gray-200 bg-white p-3 text-gray-900 shadow-xl">
+                    <div className="mb-3 flex items-center justify-between gap-4">
+                      <h2 className="font-semibold text-primary">
+                        Aktuelle Produkte
+                      </h2>
+                      <Link
+                        to="/products"
+                        className="text-sm font-semibold text-secondary hover:underline"
+                      >
+                        Alle Produkte
+                      </Link>
+                    </div>
+                    {productsLoading ? (
+                      <p className="py-4 text-sm text-gray-600" role="status">
+                        Produkte werden geladen ...
+                      </p>
+                    ) : productsFailed ? (
+                      <p className="py-4 text-sm text-red-700" role="alert">
+                        Produkte konnten nicht geladen werden.
+                      </p>
+                    ) : previewProducts.length === 0 ? (
+                      <p className="py-4 text-sm text-gray-600">
+                        Keine Produkte verfügbar.
+                      </p>
+                    ) : (
+                      <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                        {previewProducts.slice(0, 4).map((product) => (
+                          <li key={product.productId}>
+                            <Link
+                              to={`/offers/${product.productId}`}
+                              className="flex min-w-0 items-center gap-3 border border-gray-200 p-2 transition-colors hover:border-primary hover:bg-gray-50"
+                            >
+                              <img
+                                src={product.imageUrl}
+                                alt=""
+                                loading="lazy"
+                                className="size-14 shrink-0 object-contain"
+                              />
+                              <span className="min-w-0">
+                                <span className="block line-clamp-2 text-sm font-medium">
+                                  {product.name}
+                                </span>
+                                {product.price !== null && (
+                                  <span className="mt-1 block text-sm font-bold text-primary">
+                                    {formatPrice(product.price)}
+                                  </span>
+                                )}
+                              </span>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+
+                {activeMenu === "categories" &&
+                  previewMenu === "categories" && (
+                    <div className="absolute left-0 top-full z-50 w-[min(520px,calc(100vw-2rem))] border border-gray-200 bg-white p-3 text-gray-900 shadow-xl">
+                      <div className="mb-3 flex items-center justify-between gap-4">
+                        <h2 className="font-semibold text-primary">
+                          Kategorien entdecken
+                        </h2>
+                        <Link
+                          to="/categories"
+                          className="text-sm font-semibold text-secondary hover:underline"
+                        >
+                          Alle Kategorien
+                        </Link>
+                      </div>
+                      {previewCategoriesLoading ? (
+                        <p className="py-4 text-sm text-gray-600" role="status">
+                          Kategorien werden geladen ...
+                        </p>
+                      ) : previewCategoriesFailed ? (
+                        <p className="py-4 text-sm text-red-700" role="alert">
+                          Kategorien konnten nicht geladen werden.
+                        </p>
+                      ) : previewCategories.length === 0 ? (
+                        <p className="py-4 text-sm text-gray-600">
+                          Keine Kategorien verfügbar.
+                        </p>
+                      ) : (
+                        <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                          {previewCategories.map(({ category, products }) => {
+                            const image = products[0].imageUrl;
+                            return (
+                              <li key={category.categoryId}>
+                                <Link
+                                  to={`/categories/${category.categoryId}`}
+                                  className="group flex min-w-0 items-center gap-3 border border-gray-200 p-2 transition-colors hover:border-primary hover:bg-gray-50"
+                                >
+                                  <div className="grid size-12 shrink-0 place-items-center bg-gray-100">
+                                    {image && (
+                                      <img
+                                        src={image}
+                                        alt=""
+                                        loading="lazy"
+                                        className="size-12 object-contain transition-transform duration-300 group-hover:scale-105"
+                                      />
+                                    )}
+                                  </div>
+                                  <span className="min-w-0 line-clamp-2 text-sm font-semibold">
+                                    {category.name}
+                                  </span>
+                                </Link>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      )}
+                    </div>
+                  )}
+              </li>
+            );
+          })}
         </ul>
       </nav>
 
@@ -82,7 +280,10 @@ const Navbar = ({ navLinks }: Props) => {
         className="relative w-full max-w-sm"
         onBlur={(event) => {
           const nextTarget = event.relatedTarget;
-          if (!(nextTarget instanceof Node) || !event.currentTarget.contains(nextTarget)) {
+          if (
+            !(nextTarget instanceof Node) ||
+            !event.currentTarget.contains(nextTarget)
+          ) {
             setSearchOpen(false);
           }
         }}
@@ -92,7 +293,11 @@ const Navbar = ({ navLinks }: Props) => {
           onSubmit={(event) => event.preventDefault()}
           className="flex h-11 items-center gap-2 border border-white/50 bg-white px-3 text-gray-900"
         >
-          <Search size={18} aria-hidden="true" className="shrink-0 text-gray-500" />
+          <Search
+            size={18}
+            aria-hidden="true"
+            className="shrink-0 text-gray-500"
+          />
           <input
             type="search"
             value={searchText}
@@ -159,7 +364,9 @@ const Navbar = ({ navLinks }: Props) => {
                       className="size-12 shrink-0 object-contain"
                     />
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate font-medium">{product.name}</span>
+                      <span className="block truncate font-medium">
+                        {product.name}
+                      </span>
                       {product.brand && (
                         <span className="block truncate text-xs text-gray-600">
                           {product.brand}

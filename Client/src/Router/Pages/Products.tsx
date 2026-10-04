@@ -27,9 +27,12 @@ const Products = () => {
   const [appliedFilters, setAppliedFilters] = useState(emptyFilters);
   const [filterError, setFilterError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const { data: products, isFetching, isError, error } = useQuery(
-    catalogProductsQuery(appliedFilters),
-  );
+  const {
+    data: products,
+    isFetching,
+    isError,
+    error,
+  } = useQuery(catalogProductsQuery(appliedFilters));
 
   const handleChange = (name: keyof ProductFilters, value: string) => {
     setFilters((current) => ({ ...current, [name]: value }));
@@ -42,7 +45,9 @@ const Products = () => {
     const maxPrice = filters.maxPrice === "" ? null : Number(filters.maxPrice);
 
     if (minPrice !== null && maxPrice !== null && minPrice > maxPrice) {
-      setFilterError("Der Mindestpreis darf nicht über dem Höchstpreis liegen.");
+      setFilterError(
+        "Der Mindestpreis darf nicht über dem Höchstpreis liegen.",
+      );
       return;
     }
 
@@ -60,16 +65,20 @@ const Products = () => {
 
   const totalItems = products?.length ?? 0;
   const totalPages = Math.ceil(totalItems / PAGE_SIZE);
-  const pageProducts = products?.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE) ?? [];
+  const pageProducts =
+    products?.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE) ??
+    [];
 
   return (
     <main className="px-page-desktop py-gutter-desktop">
       <header className="mb-8 border-b border-gray-200 pb-6">
-        <h1 className="text-headline-lg text-on-primary-fixed-variant">Produkte</h1>
+        <h1 className="text-headline-lg text-on-primary-fixed-variant">
+          Produkte
+        </h1>
         <p className="mt-2 text-gray-600">Entdecke das ALDI Sortiment.</p>
       </header>
 
-      <div className="grid items-start gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
+      <div className="grid items-start gap-8 lg:grid-cols-[minmax(260px,.6fr)_minmax(0,1fr)]">
         <aside aria-label="Produktfilter">
           <FilterForm
             filters={filters}
@@ -99,14 +108,17 @@ const Products = () => {
           )}
 
           {!isFetching && pageProducts.length > 0 && (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4 lg:max-h-[500px] overflow-y-auto">
               {pageProducts.map((product) => (
                 <article
                   key={product.productId}
                   className="flex min-w-0 flex-col border border-gray-200 bg-white p-3 transition-shadow hover:shadow-md"
                 >
                   <div className="relative grid aspect-square place-items-center bg-gray-50 p-3">
-                    <Link to={`/offers/${product.productId}`} className="grid h-full w-full place-items-center">
+                    <Link
+                      to={`/offers/${product.productId}`}
+                      className="grid h-full w-full place-items-center"
+                    >
                       <img
                         src={product.imageUrl}
                         alt={product.name}
@@ -114,18 +126,30 @@ const Products = () => {
                         className="max-h-full max-w-full object-contain"
                       />
                     </Link>
-                    <ProductActions product={product} className="absolute right-2 top-2" />
+                    <ProductActions
+                      product={product}
+                      className="absolute right-2 top-2"
+                    />
                   </div>
                   <div className="flex grow flex-col gap-2 pt-3">
                     {product.brand && (
-                      <p className="text-xs uppercase text-gray-500">{product.brand}</p>
+                      <p className="text-xs uppercase text-gray-500">
+                        {product.brand}
+                      </p>
                     )}
-                    <Link to={`/offers/${product.productId}`} className="font-semibold text-on-primary-fixed-variant">
+                    <Link
+                      to={`/offers/${product.productId}`}
+                      className="font-semibold text-on-primary-fixed-variant"
+                    >
                       {product.name}
                     </Link>
-                    <p className="mt-auto font-bold">{formatPrice(product.price)}</p>
+                    <p className="mt-auto font-bold">
+                      {formatPrice(product.price)}
+                    </p>
                     {product.salesUnit && (
-                      <p className="text-sm text-gray-600">{product.salesUnit}</p>
+                      <p className="text-sm text-gray-600">
+                        {product.salesUnit}
+                      </p>
                     )}
                   </div>
                 </article>

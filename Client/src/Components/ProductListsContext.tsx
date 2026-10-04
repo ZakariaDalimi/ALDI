@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import type { Product } from "@/api/discountedProducts";
+import { toast } from "sonner";
 
 interface ProductLists {
   favorites: Product[];
@@ -14,7 +15,9 @@ interface ProductListsContextValue extends ProductLists {
 
 const STORAGE_KEY = "aldi-product-lists";
 const emptyLists: ProductLists = { favorites: [], shoppingList: [] };
-const ProductListsContext = createContext<ProductListsContextValue | null>(null);
+const ProductListsContext = createContext<ProductListsContextValue | null>(
+  null,
+);
 
 const readSavedLists = (): ProductLists => {
   try {
@@ -24,7 +27,9 @@ const readSavedLists = (): ProductLists => {
     const parsed = JSON.parse(saved) as Partial<ProductLists>;
     return {
       favorites: Array.isArray(parsed.favorites) ? parsed.favorites : [],
-      shoppingList: Array.isArray(parsed.shoppingList) ? parsed.shoppingList : [],
+      shoppingList: Array.isArray(parsed.shoppingList)
+        ? parsed.shoppingList
+        : [],
     };
   } catch {
     return emptyLists;
@@ -39,25 +44,47 @@ export const ProductListsProvider = ({ children }: { children: ReactNode }) => {
   }, [lists]);
 
   const toggleFavorite = (product: Product) => {
+    const isFavorite = lists.favorites.some(
+      (item) => item.productId === product.productId,
+    );
     setLists((current) => ({
       ...current,
-      favorites: current.favorites.some((item) => item.productId === product.productId)
-        ? current.favorites.filter((item) => item.productId !== product.productId)
+      favorites: isFavorite
+        ? current.favorites.filter(
+            (item) => item.productId !== product.productId,
+          )
         : [...current.favorites, product],
     }));
+    if (isFavorite) {
+      toast.error(`${product.name} aus der Merkliste entfernt`);
+    } else {
+      toast.success(`${product.name} zur Merkliste hinzugefügt`);
+    }
   };
 
   const toggleShoppingList = (product: Product) => {
+    const isInShoppingList = lists.shoppingList.some(
+      (item) => item.productId === product.productId,
+    );
     setLists((current) => ({
       ...current,
-      shoppingList: current.shoppingList.some((item) => item.productId === product.productId)
-        ? current.shoppingList.filter((item) => item.productId !== product.productId)
+      shoppingList: isInShoppingList
+        ? current.shoppingList.filter(
+            (item) => item.productId !== product.productId,
+          )
         : [...current.shoppingList, product],
     }));
+    if (isInShoppingList) {
+      toast.error(`${product.name} aus der Einkaufsliste entfernt`);
+    } else {
+      toast.success(`${product.name} zur Einkaufsliste hinzugefügt`);
+    }
   };
 
   return (
-    <ProductListsContext.Provider value={{ ...lists, toggleFavorite, toggleShoppingList }}>
+    <ProductListsContext.Provider
+      value={{ ...lists, toggleFavorite, toggleShoppingList }}
+    >
       {children}
     </ProductListsContext.Provider>
   );
@@ -65,6 +92,7 @@ export const ProductListsProvider = ({ children }: { children: ReactNode }) => {
 
 export const useProductLists = () => {
   const context = useContext(ProductListsContext);
-  if (!context) throw new Error("useProductLists must be used inside ProductListsProvider");
+  if (!context)
+    throw new Error("useProductLists must be used inside ProductListsProvider");
   return context;
 };

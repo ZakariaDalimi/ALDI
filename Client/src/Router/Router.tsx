@@ -14,18 +14,24 @@ import { productsQuery } from "../api/discountedProducts";
 import GlobalLoadingOverlay from "../Components/GlobalLoadingOverlay";
 import { ProductListsProvider } from "../Components/ProductListsContext";
 import Footer from "../Components/Footer";
+import { Toaster } from "sonner";
 export const queryClient = new QueryClient();
 const navItems = [
   { title: "Wochenangebote", linkTo: "/offers" }, // Assuming this routes somewhere or to Root
   { title: "Produkte", linkTo: "/products" },
   { title: "Categories", linkTo: "/categories" },
-  { title: "Test", linkTo: "/test" },
 ];
 
 const AppContent = () => {
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar navLinks={navItems} />
+      <Toaster
+        position="top-right"
+        richColors
+        closeButton
+        className="aldi-toaster"
+      />
       <GlobalLoadingOverlay />
       <main className="flex-1">
         <Outlet />
@@ -71,7 +77,7 @@ const router = createBrowserRouter([
             index: true,
             loader: async () => {
               await queryClient.ensureQueryData(categoriesQuery);
-              return null; 
+              return null;
             },
           },
           {
@@ -88,7 +94,7 @@ const router = createBrowserRouter([
             index: true,
             loader: async () => {
               await queryClient.ensureQueryData(productsQuery);
-              return null; 
+              return null;
             },
           },
           {
@@ -97,7 +103,7 @@ const router = createBrowserRouter([
           },
         ],
       },
-   
+
       {
         path: "*", // Catch-all route for any undefined URLs
         Component: NotFound,

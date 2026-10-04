@@ -1,14 +1,31 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useIsFetching } from "@tanstack/react-query";
-import { useNavigation } from "react-router";
+import { useLocation, useNavigation } from "react-router";
 
 const GlobalLoadingOverlay = () => {
+  const location = useLocation();
   const navigation = useNavigation();
   const isNavigating = navigation.state !== "idle";
-  const isFetching = useIsFetching({
-    predicate: (query) => query.queryKey[0] !== "product-search",
-  }) > 0;
+  const isFetching =
+    useIsFetching({
+      predicate: (query) => query.queryKey[0] !== "product-search",
+    }) > 0;
   const [isSlowFetch, setIsSlowFetch] = useState(false);
+  const [showNavigationFeedback, setShowNavigationFeedback] = useState(false);
+  const previousLocationKey = useRef(location.key);
+
+  useEffect(() => {
+    if (previousLocationKey.current === location.key) return;
+
+    previousLocationKey.current = location.key;
+    setShowNavigationFeedback(true);
+
+    const timeout = window.setTimeout(
+      () => setShowNavigationFeedback(false),
+      400,
+    );
+    return () => window.clearTimeout(timeout);
+  }, [location.key]);
 
   useEffect(() => {
     if (!isFetching) {
@@ -20,11 +37,11 @@ const GlobalLoadingOverlay = () => {
     return () => window.clearTimeout(timeout);
   }, [isFetching]);
 
-  if (!isNavigating && !isSlowFetch) return null;
+  if (!isNavigating && !isSlowFetch && !showNavigationFeedback) return null;
 
   return (
     <div
-      className="fixed inset-0 z-[100] grid place-items-center bg-white/90 backdrop-blur-sm"
+      className="fixed inset-0 z-100 grid place-items-center bg-white/90 backdrop-blur-sm"
       role="status"
       aria-live="polite"
       aria-label="Seite wird geladen"
@@ -36,7 +53,9 @@ const GlobalLoadingOverlay = () => {
           className="h-40 w-[min(88vw,42rem)] animate-pulse object-contain sm:h-48"
         />
         <span className="size-10 animate-spin rounded-full border-4 border-primary/20 border-t-primary motion-reduce:animate-none" />
-        <span className="text-sm font-medium text-gray-700">Einen Moment bitte ...</span>
+        <span className="text-sm font-medium text-gray-700">
+          Einen Moment bitte ...
+        </span>
       </div>
     </div>
   );

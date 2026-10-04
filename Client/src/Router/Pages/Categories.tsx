@@ -56,9 +56,9 @@ const CategoryProductSlider = ({ products }: { products: Product[] }) => {
         spaceBetween={12}
         breakpoints={{
           480: { slidesPerView: 2.1 },
-          768: { slidesPerView: 3.2, spaceBetween: 16 },
-          1024: { slidesPerView: 4.2, spaceBetween: 16 },
-          1280: { slidesPerView: 5.2, spaceBetween: 20 },
+          768: { slidesPerView: 3.5, spaceBetween: 16 },
+          1024: { slidesPerView: 4.5, spaceBetween: 16 },
+          1280: { slidesPerView: 5.5, spaceBetween: 20 },
         }}
         className="w-full !py-2"
       >
@@ -66,7 +66,10 @@ const CategoryProductSlider = ({ products }: { products: Product[] }) => {
           <SwiperSlide key={product.productId} className="!h-auto">
             <article className="flex h-full min-w-0 flex-col border border-gray-200 bg-white p-3 transition-shadow hover:shadow-md">
               <div className="relative grid aspect-square place-items-center bg-gray-50 p-3">
-                <Link to={`/offers/${product.productId}`} className="grid h-full w-full place-items-center">
+                <Link
+                  to={`/offers/${product.productId}`}
+                  className="grid h-full w-full place-items-center"
+                >
                   <img
                     src={product.imageUrl}
                     alt={product.name}
@@ -74,15 +77,29 @@ const CategoryProductSlider = ({ products }: { products: Product[] }) => {
                     className="max-h-full max-w-full object-contain"
                   />
                 </Link>
-                <ProductActions product={product} className="absolute right-2 top-2" />
+                <ProductActions
+                  product={product}
+                  className="absolute right-2 top-2"
+                />
               </div>
               <div className="flex grow flex-col gap-2 pt-3">
-                {product.brand && <p className="text-xs uppercase text-gray-500">{product.brand}</p>}
-                <Link to={`/offers/${product.productId}`} className="font-semibold text-on-primary-fixed-variant">
+                {product.brand && (
+                  <p className="text-xs uppercase text-gray-500">
+                    {product.brand}
+                  </p>
+                )}
+                <Link
+                  to={`/offers/${product.productId}`}
+                  className="font-semibold text-on-primary-fixed-variant"
+                >
                   {product.name}
                 </Link>
-                <p className="mt-auto font-bold">{formatPrice(product.price)}</p>
-                {product.salesUnit && <p className="text-sm text-gray-600">{product.salesUnit}</p>}
+                <p className="mt-auto font-bold">
+                  {formatPrice(product.price)}
+                </p>
+                {product.salesUnit && (
+                  <p className="text-sm text-gray-600">{product.salesUnit}</p>
+                )}
               </div>
             </article>
           </SwiperSlide>
@@ -107,7 +124,9 @@ const Categories = () => {
     ),
   });
   const productsFailed = categoryProductQueries.some((query) => query.isError);
-  const productsError = categoryProductQueries.find((query) => query.isError)?.error;
+  const productsError = categoryProductQueries.find(
+    (query) => query.isError,
+  )?.error;
 
   const sortedCategories = [...categories].sort((first, second) =>
     first.name.localeCompare(second.name, "de"),
@@ -118,18 +137,23 @@ const Categories = () => {
     );
     return (categoryProductQueries[categoryIndex]?.data?.length ?? 0) > 0;
   });
-  const availableProductCount = availableCategories.reduce((total, category) => {
-    const categoryIndex = categories.findIndex(
-      (item) => item.categoryId === category.categoryId,
-    );
-    return total + (categoryProductQueries[categoryIndex]?.data?.length ?? 0);
-  }, 0);
+  const availableProductCount = availableCategories.reduce(
+    (total, category) => {
+      const categoryIndex = categories.findIndex(
+        (item) => item.categoryId === category.categoryId,
+      );
+      return total + (categoryProductQueries[categoryIndex]?.data?.length ?? 0);
+    },
+    0,
+  );
 
   if (categoriesFailed || productsFailed) {
     return (
       <main className="px-page-desktop py-gutter-desktop">
         <p role="alert" className="text-red-700">
-          {categoriesError?.message ?? productsError?.message ?? "Kategorien konnten nicht geladen werden."}
+          {categoriesError?.message ??
+            productsError?.message ??
+            "Kategorien konnten nicht geladen werden."}
         </p>
       </main>
     );
@@ -146,7 +170,8 @@ const Categories = () => {
             Finde, was auf deiner Liste steht.
           </h1>
           <p className="mt-4 text-white/75">
-            {availableCategories.length} Kategorien · {availableProductCount} Produkte
+            {availableCategories.length} Kategorien · {availableProductCount}{" "}
+            Produkte
           </p>
         </div>
       </header>
@@ -174,7 +199,8 @@ const Categories = () => {
           const categoryIndex = categories.findIndex(
             (item) => item.categoryId === category.categoryId,
           );
-          const categoryProducts = categoryProductQueries[categoryIndex]?.data ?? [];
+          const categoryProducts =
+            categoryProductQueries[categoryIndex]?.data ?? [];
           const previewProducts = categoryProducts.slice(0, 15);
 
           return (
@@ -216,4 +242,4 @@ const Categories = () => {
   );
 };
 
-export default Categories
+export default Categories;
